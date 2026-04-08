@@ -1,0 +1,131 @@
+.contact {
+  background: var(--surface-alt);
+}
+
+.contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 80px;
+  align-items: center;
+}
+
+.contact-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface-lift);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  transition: border-color 0.2s, transform 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.contact-card:hover {
+  border-color: var(--border-gold);
+  transform: translateY(-2px);
+}
+
+.contact-card--static {
+  cursor: default;
+}
+
+.contact-card--static:hover {
+  transform: none;
+}
+
+.contact-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--gold-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-card-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+}
+
+.contact-card-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.contact-cta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.contact-visual {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 3/4;
+}
+
+.contact-visual > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contact-visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(11, 11, 15, 0.88) 0%, transparent 55%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 36px;
+  text-align: center;
+}
+
+.contact-logo {
+  height: 32px;
+  /* No filter — logo displays with original brand colors */
+  margin-bottom: 14px;
+}
+
+.contact-visual-overlay p {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.45;
+}
+
+@media (max-width: 1024px) {
+  .contact-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .contact-visual {
+    aspect-ratio: 16/9;
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 580px) {
+  .contact-cards {
+    grid-template-columns: 1fr;
+  }
+}

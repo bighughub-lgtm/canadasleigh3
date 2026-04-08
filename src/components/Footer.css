@@ -1,0 +1,218 @@
+.footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.footer-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 64px;
+  padding: 64px 0 48px;
+}
+
+.footer-brand {
+  flex: 0 0 320px;
+}
+
+.footer-logo {
+  height: 36px;
+  margin-bottom: 16px;
+}
+
+.footer-tagline {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 16px;
+  line-height: 1.55;
+}
+
+.footer-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.footer-contacts a {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-contacts a:hover {
+  color: var(--gold);
+}
+
+/* Company rekvizīti */
+.footer-company {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-company-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.footer-company span {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* Placeholder style inside footer */
+.footer-placeholder {
+  color: var(--gold-deep);
+  font-style: italic;
+  font-size: 11px;
+}
+
+.footer-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  flex: 1;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 130px;
+  flex: 1 1 0;
+}
+
+.footer-col h4 {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.footer-col a {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: var(--gold);
+}
+
+/* Cookie settings button styled as link */
+.footer-cookie-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--text-dim);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.footer-cookie-btn:hover {
+  color: var(--gold);
+}
+
+/* Bottom bar */
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+  flex-wrap: wrap;
+}
+
+.footer-bottom-legal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-bottom-legal a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+  font-size: 12px;
+}
+
+.footer-bottom-legal a:hover {
+  color: var(--gold);
+}
+
+.footer-sep {
+  color: var(--border);
+  user-select: none;
+}
+
+@media (max-width: 1024px) {
+  .footer-top {
+    gap: 40px;
+  }
+
+  .footer-brand {
+    flex: 0 0 260px;
+  }
+
+  .footer-nav-row {
+    gap: 24px;
+  }
+
+  .footer-col {
+    min-width: 110px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    gap: 32px;
+    padding: 40px 0 32px;
+  }
+
+  .footer-brand {
+    flex: none;
+  }
+
+  .footer-nav-row {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-col {
+    flex: none;
+    min-width: 140px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .footer-bottom-legal {
+    gap: 6px;
+  }
+}

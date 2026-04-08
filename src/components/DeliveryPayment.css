@@ -1,0 +1,134 @@
+.delivery-payment {
+  background: var(--bg);
+}
+
+.dp-header {
+  margin-bottom: 56px;
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.dp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+}
+
+.dp-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dp-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--gold-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dp-card-head h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dp-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dp-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.dp-list svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.dp-contact {
+  background:
+    linear-gradient(145deg, rgba(201, 146, 63, 0.3), rgba(154, 103, 40, 0.78)),
+    radial-gradient(circle at top left, rgba(221, 178, 104, 0.18), transparent 45%),
+    #161319;
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 220px;
+}
+
+.dp-contact-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.dp-contact h3 {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.dp-contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dp-contact-links a {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.dp-contact-links a:hover {
+  color: #fff;
+}
+
+@media (max-width: 1024px) {
+  .dp-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dp-contact {
+    grid-column: span 2;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .dp-grid { grid-template-columns: 1fr; }
+  .dp-contact { grid-column: 1; }
+}
