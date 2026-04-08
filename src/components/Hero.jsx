@@ -137,7 +137,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <span className="hero-label">Zviedrijā ražotas · Officiālais izplatītājs Baltijā</span>
+          <span className="hero-label">Officiālais izplatītājs Baltijā</span>
         </motion.div>
 
         <motion.h1
