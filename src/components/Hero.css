@@ -203,8 +203,10 @@
 
   .hero-label {
     max-width: 100%;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    line-height: 1.45;
     padding: 8px 14px;
-    line-height: 1.5;
     margin-bottom: 20px;
   }
 
@@ -256,7 +258,7 @@
   }
 
   .hero-label {
-    font-size: 10px;
+    font-size: 8px;
     letter-spacing: 0.16em;
     margin-bottom: 18px;
   }
