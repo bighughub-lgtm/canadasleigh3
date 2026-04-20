@@ -190,8 +190,7 @@ const products = [
       'Viegli kopjamas',
       'Piemērotas smagiem medījumiem un aprīkojumam',
     ],
-    // STRIPE: Replace '#compact' with your Stripe payment link for the COMPACT model.
-    buyUrl: '#compact',
+    buyUrl: 'https://buy.stripe.com/8x2eV7cZx8dAfCxaJy6Vq00',
     expandable: true,
     media: compactMedia,
     details: {
@@ -236,8 +235,7 @@ const products = [
       'Vienlaicīgi līdz 2 lieliem alņiem',
       'Piemērots smagām slodzēm',
     ],
-    // STRIPE: Replace '#classic' with your Stripe payment link for the CLASSIC model.
-    buyUrl: '#classic',
+    buyUrl: 'https://buy.stripe.com/14A3cpgbJ8dA8a5cRG6Vq01',
     expandable: true,
     media: classicMedia,
     details: {
@@ -282,8 +280,7 @@ const products = [
       '8 mm HD polietilēns',
       'Xtension pagarinājums līdz 3,5 m',
     ],
-    // STRIPE: Replace '#classic-open' with your Stripe payment link for the CLASSIC OPEN model.
-    buyUrl: '#classic-open',
+    buyUrl: 'https://buy.stripe.com/cNi5kxcZx0L88a5dVK6Vq02',
     expandable: true,
     media: classicOpenMedia,
     details: {
@@ -334,14 +331,6 @@ const initialActiveMedia = Object.fromEntries(
 const expandTransition = {
   duration: 0.3,
   ease: [0.22, 0.61, 0.36, 1],
-}
-
-function handleBuy(event, url) {
-  // STRIPE: Remove this handler and use the real href values when Stripe links are live.
-  if (url.startsWith('#')) {
-    event.preventDefault()
-    window.location.href = '#kontakti'
-  }
 }
 
 function getMediaCountLabel(media) {
@@ -478,11 +467,9 @@ function ExpandedProductDetails({ product, activeMediaId, onSelect }) {
 
           <div className="catalog-expanded-footer">
             <p>{product.details.footerNote}</p>
-            {/* STRIPE: Replace product.buyUrl with the direct Stripe link for this product's expanded CTA. */}
             <a
               href={product.buyUrl}
               className="catalog-action-btn catalog-action-btn--primary catalog-action-btn--compact"
-              onClick={(event) => handleBuy(event, product.buyUrl)}
             >
               Pirkt
             </a>
@@ -580,11 +567,9 @@ export default function ProductCatalog() {
                   </div>
 
                   <div className={`catalog-actions${product.expandable ? ' catalog-actions--dual' : ''}`}>
-                    {/* STRIPE: Replace product.buyUrl with the direct Stripe payment link for this product. */}
                     <a
                       href={product.buyUrl}
                       className="catalog-action-btn catalog-action-btn--primary"
-                      onClick={(event) => handleBuy(event, product.buyUrl)}
                     >
                       Pirkt
                     </a>
