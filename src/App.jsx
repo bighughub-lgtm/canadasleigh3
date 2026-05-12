@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
@@ -9,6 +9,9 @@ import PrivatumaPolitika from './pages/PrivatumaPolitika'
 import SikdatnuPolitika from './pages/SikdatnuPolitika'
 import PirksanasNoteikumi from './pages/PirksanasNoteikumi'
 import PiegadeAtgriešana from './pages/PiegadeAtgriešana'
+
+const AdminLogin = lazy(() => import('./admin/AdminLogin'))
+const AdminDashboard = lazy(() => import('./admin/AdminDashboard'))
 
 function RouteScrollTop() {
   const { pathname, hash } = useLocation()
@@ -30,22 +33,29 @@ function RouteScrollTop() {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
+  const isAdminRoute = pathname.startsWith('/admin')
+
   return (
     <>
       <RouteScrollTop />
-      <Header />
+      {!isAdminRoute && <Header />}
       <main>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/privatuma-politika" element={<PrivatumaPolitika />} />
-          <Route path="/sikdatnu-politika" element={<SikdatnuPolitika />} />
-          <Route path="/pirksanas-noteikumi" element={<PirksanasNoteikumi />} />
-          <Route path="/piegade-atgriešana" element={<PiegadeAtgriešana />} />
-        </Routes>
+        <Suspense fallback={<div />}>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/privatuma-politika" element={<PrivatumaPolitika />} />
+            <Route path="/sikdatnu-politika" element={<SikdatnuPolitika />} />
+            <Route path="/pirksanas-noteikumi" element={<PirksanasNoteikumi />} />
+            <Route path="/piegade-atgriešana" element={<PiegadeAtgriešana />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Routes>
+        </Suspense>
       </main>
-      <Footer />
-      <ScrollToTop />
-      <CookieBanner />
+      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <ScrollToTop />}
+      {!isAdminRoute && <CookieBanner />}
     </>
   )
 }

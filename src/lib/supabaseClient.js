@@ -1,0 +1,21 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export const supabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
+
+export const supabase = supabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
+    })
+  : null
+
+export function getSupabaseConfigError() {
+  if (supabaseConfigured) return null
+  return 'Supabase nav nokonfigurēts. Pievienojiet VITE_SUPABASE_URL un VITE_SUPABASE_ANON_KEY.'
+}

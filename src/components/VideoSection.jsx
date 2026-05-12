@@ -2,7 +2,7 @@ import './VideoSection.css'
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
-const videos = [
+const fallbackVideos = [
   {
     id: 'vannas-lat',
     type: 'local',
@@ -63,6 +63,51 @@ const videos = [
   },
 ]
 
+function textFallback(item, field, fallback = '') {
+  return item[`${field}_lv`] || item[`${field}_en`] || item[`${field}_ru`] || item[`${field}_lt`] || item[`${field}_est`] || fallback
+}
+
+function getYouTubeId(videoUrl) {
+  if (!videoUrl) return null
+
+  if (/^[a-zA-Z0-9_-]{11}$/.test(videoUrl)) return videoUrl
+
+  try {
+    const url = new URL(videoUrl)
+    const host = url.hostname.replace(/^www\./, '')
+
+    if (host === 'youtu.be') {
+      return url.pathname.split('/').filter(Boolean)[0] || null
+    }
+
+    if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com') {
+      if (url.pathname === '/watch') return url.searchParams.get('v')
+      const parts = url.pathname.split('/').filter(Boolean)
+      if (['embed', 'shorts', 'live'].includes(parts[0])) return parts[1] || null
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+function mapCmsVideos(items) {
+  return items.map((item) => {
+    const youtubeId = getYouTubeId(item.video_url)
+
+    return {
+      id: item.id,
+      type: youtubeId ? 'youtube' : 'local',
+      videoId: youtubeId,
+      src: item.video_url,
+      thumbnailUrl: item.thumbnail_url,
+      title: textFallback(item, 'title', 'Video'),
+      desc: textFallback(item, 'description', ''),
+    }
+  })
+}
+
 function LocalVideoThumbnail({ src, previewTime = 0.1 }) {
   const previewRef = useRef(null)
 
@@ -107,11 +152,29 @@ function LocalVideoThumbnail({ src, previewTime = 0.1 }) {
 }
 
 export default function VideoSection() {
+  const [videos, setVideos] = useState(fallbackVideos)
   const [activeIdx, setActiveIdx] = useState(0)
   const [canScrollDown, setCanScrollDown] = useState(false)
   const playlistRef = useRef(null)
   const playerRef = useRef(null)
   const active = videos[activeIdx]
+
+  useEffect(() => {
+    let mounted = true
+
+    import('../lib/cmsApi')
+      .then(({ getActiveVideos }) => getActiveVideos())
+      .then((items) => {
+        if (!mounted || items.length === 0) return
+        setVideos(mapCmsVideos(items))
+        setActiveIdx(0)
+      })
+      .catch(() => {})
+
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   useEffect(() => {
     const playlist = playlistRef.current
@@ -194,9 +257,9 @@ export default function VideoSection() {
                 />
               ) : (
                 <iframe
-                  key={active.id}
+                  key={active.videoId || active.id}
                   className="video-embed-player"
-                  src={`https://www.youtube.com/embed/${active.id}?rel=0&modestbranding=1`}
+                  src={`https://www.youtube.com/embed/${active.videoId || active.id}?rel=0&modestbranding=1`}
                   title={active.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -237,7 +300,15 @@ export default function VideoSection() {
                     {v.type === 'youtube' ? (
                       <img
                         className="video-thumb-media"
-                        src={`https://img.youtube.com/vi/${v.id}/mqdefault.jpg`}
+                        src={v.thumbnailUrl || `https://img.youtube.com/vi/${v.videoId || v.id}/mqdefault.jpg`}
+                        alt={v.title}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : v.thumbnailUrl ? (
+                      <img
+                        className="video-thumb-media"
+                        src={v.thumbnailUrl}
                         alt={v.title}
                         loading="lazy"
                         decoding="async"

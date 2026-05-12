@@ -2,7 +2,9 @@ import './Gallery.css'
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const galleryImages = [
+const previewSlots = ['hero', 'side-a', 'side-b', 'bottom-a', 'bottom-b', 'bottom-c']
+
+const fallbackGalleryImages = [
   {
     src: '/DSC06432.jpg',
     alt: 'Canada Pulkan ragavas reālā meža maršrutā',
@@ -71,15 +73,44 @@ const galleryImages = [
   },
 ]
 
-const previewImages = galleryImages.filter((image) => image.previewSlot)
+function textFallback(item, field, fallback = '') {
+  return item[`${field}_lv`] || item[`${field}_en`] || item[`${field}_ru`] || item[`${field}_lt`] || item[`${field}_est`] || fallback
+}
+
+function mapMediaToGallery(media) {
+  return media.map((item, index) => ({
+    src: item.url,
+    alt: textFallback(item, 'alt', textFallback(item, 'title', 'Canada apvidus ragavas')),
+    caption: textFallback(item, 'title', `Foto ${index + 1}`),
+    previewSlot: previewSlots[index] || undefined,
+  }))
+}
 
 export default function Gallery() {
+  const [galleryImages, setGalleryImages] = useState(fallbackGalleryImages)
   const [lightbox, setLightbox] = useState(null)
+  const previewImages = galleryImages.filter((image) => image.previewSlot)
+
+  useEffect(() => {
+    let active = true
+
+    import('../lib/cmsApi')
+      .then(({ getActiveMedia }) => getActiveMedia('gallery'))
+      .then((media) => {
+        if (!active || media.length === 0) return
+        setGalleryImages(mapMediaToGallery(media))
+      })
+      .catch(() => {})
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const openLightbox = useCallback((src) => {
     const index = galleryImages.findIndex((image) => image.src === src)
     if (index >= 0) setLightbox(index)
-  }, [])
+  }, [galleryImages])
 
   const closeLightbox = useCallback(() => setLightbox(null), [])
 
@@ -88,14 +119,14 @@ export default function Gallery() {
       if (index === null) return 0
       return (index - 1 + galleryImages.length) % galleryImages.length
     })
-  }, [])
+  }, [galleryImages.length])
 
   const nextImage = useCallback(() => {
     setLightbox((index) => {
       if (index === null) return 0
       return (index + 1) % galleryImages.length
     })
-  }, [])
+  }, [galleryImages.length])
 
   useEffect(() => {
     if (lightbox === null) return
