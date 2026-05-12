@@ -5,6 +5,7 @@ const tabs = [
   { id: 'product-galleries', label: 'Produktu galerijas' },
   { id: 'videos', label: 'Videoklipi' },
   { id: 'sections', label: 'Sadaļu bildes' },
+  { id: 'texts', label: 'Teksti' },
 ]
 
 export default function AdminLayout({ activeTab, onTabChange, onSignOut, userEmail, children }) {
@@ -16,7 +17,7 @@ export default function AdminLayout({ activeTab, onTabChange, onSignOut, userEma
         </a>
         <div className="admin-sidebar-copy">
           <span className="admin-kicker">Admin panelis</span>
-          <h1>Media pārvaldība</h1>
+          <h1>Satura pārvaldība</h1>
           <p>{userEmail}</p>
         </div>
 

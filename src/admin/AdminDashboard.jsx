@@ -5,6 +5,7 @@ import AdminGallery from './AdminGallery'
 import AdminProductGalleries from './AdminProductGalleries'
 import AdminVideos from './AdminVideos'
 import AdminSectionImages from './AdminSectionImages'
+import AdminTexts from './AdminTexts'
 import { isCurrentUserAdmin } from '../lib/cmsApi'
 import { supabase, supabaseConfigured, getSupabaseConfigError } from '../lib/supabaseClient'
 import './admin.css'
@@ -113,6 +114,7 @@ export default function AdminDashboard() {
       {activeTab === 'product-galleries' && <AdminProductGalleries />}
       {activeTab === 'videos' && <AdminVideos />}
       {activeTab === 'sections' && <AdminSectionImages />}
+      {activeTab === 'texts' && <AdminTexts />}
     </AdminLayout>
   )
 }

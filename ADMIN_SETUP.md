@@ -1,6 +1,6 @@
 # Admin CMS Setup
 
-This admin panel is a small media CMS for gallery images, product gallery images, video links, and fixed section image slots. It does not edit products, prices, checkout, legal pages, or text content.
+This admin panel is a small CMS for public website texts, gallery images, product gallery images, video links, and fixed section image slots. It does not edit product prices, checkout/payment links, legal document bodies, or product media paths.
 
 The admin UI uses only LV, EN, and RU fields. Older LT/EST database columns can remain in Supabase, but they are not shown to the client.
 
@@ -48,13 +48,30 @@ on conflict (user_id) do update set email = excluded.email;
 
 Replace `client@example.com` with the actual admin email.
 
-`supabase/admin_cms_schema.sql` creates the CMS tables, indexes, triggers, and security policies. `supabase/admin_cms_seed_existing_content.sql` imports the current existing website gallery images, product detail gallery images, product overview images, video list, and landing section image slots into the admin panel.
+`supabase/admin_cms_schema.sql` creates the CMS tables, indexes, triggers, and security policies. It now includes the `public.site_texts` table for optional public website text overrides, so run this schema once after pulling this update. `supabase/admin_cms_seed_existing_content.sql` imports the current existing website gallery images, product detail gallery images, product overview images, video list, and landing section image slots into the admin panel.
 
 After pulling or deploying updates to this media model, run `supabase/admin_cms_seed_existing_content.sql` again. The seed is safe to rerun and adds missing rows without duplicating existing gallery URLs or single image slots. It also fills missing EN/RU public media titles, alt text, and video descriptions for seeded rows without overwriting existing non-empty translations. This update adds the explicit product overview slots listed below.
 
 If the seed file is not run, the public website still works because it keeps the hardcoded fallback content, but the admin panel will look empty until media is imported or uploaded.
 
+Text overrides do not require a seed. `/admin` shows the editable text list from the code definitions even when `public.site_texts` is empty. When a row is missing or a text is reset, the public site falls back to `src/content/publicTranslations.js`.
+
 ## Admin Content Model
+
+Public website texts are managed in `Teksti`. The client can edit LV, EN, and RU values for safe public text keys such as headings, labels, CTA text, FAQ answers, cookie banner text, and legal page UI labels. Each row can be saved individually or restored to the code default.
+
+The text CMS intentionally does not edit:
+
+```text
+product prices
+Stripe/payment buy links
+product media paths
+Cloudinary folders
+legal document body files
+function-generated dynamic strings
+```
+
+For the text group map and fallback rules, see `ADMIN_TEXT_CMS_MAP.md`.
 
 Main gallery images are a many-image list in `Galerija`. The client can upload images, replace an existing image, hide/show items, delete them, and move them up or down. The admin panel keeps the order normalized automatically, so the client does not need to edit order numbers.
 
@@ -124,7 +141,9 @@ npm run dev
 11. Add one main gallery image in `Galerija`.
 12. Move main gallery images up/down and confirm the public gallery order changes.
 13. Add one video link.
-14. Check the public page and confirm fallbacks still work when no CMS data exists.
+14. Open `Teksti`, edit one public heading in LV/EN/RU, save it, and confirm the public page updates after reload or language switch.
+15. Restore that text to noklusējums and confirm the public page falls back to the static translation.
+16. Check the public page and confirm fallbacks still work when no CMS data exists.
 
 For local testing of signed image uploads, run the site through Cloudflare Pages Functions tooling or test on a Cloudflare Pages preview deployment with the server-side environment variables configured.
 
@@ -140,4 +159,5 @@ For local testing of signed image uploads, run the site through Cloudflare Pages
    - ProductOverview tabs use the matching `product_overview_*` image when available.
    - Video section uses active uploaded video links when available.
    - Partners section image uses the active `partners` section image when available.
+   - Edited rows in `Teksti` override public LV/EN/RU static text.
    - If no active CMS items exist, the site falls back to the existing hardcoded content.

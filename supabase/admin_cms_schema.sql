@@ -53,11 +53,45 @@ create table if not exists public.site_videos (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.site_texts (
+  text_key text primary key,
+  group_id text not null,
+  label_lv text not null,
+  description_lv text,
+  input_type text not null default 'text',
+  value_lv text,
+  value_en text,
+  value_ru text,
+  default_lv text,
+  default_en text,
+  default_ru text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'site_texts_input_type_check'
+      and conrelid = 'public.site_texts'::regclass
+  ) then
+    alter table public.site_texts
+      add constraint site_texts_input_type_check
+      check (input_type in ('text', 'textarea'));
+  end if;
+end $$;
+
 create index if not exists site_media_public_idx
   on public.site_media (section, is_active, sort_order, created_at);
 
 create index if not exists site_videos_public_idx
   on public.site_videos (is_active, sort_order, created_at);
+
+create index if not exists site_texts_public_idx
+  on public.site_texts (is_active, group_id, text_key);
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -79,6 +113,11 @@ create trigger set_site_videos_updated_at
 before update on public.site_videos
 for each row execute function public.set_updated_at();
 
+drop trigger if exists set_site_texts_updated_at on public.site_texts;
+create trigger set_site_texts_updated_at
+before update on public.site_texts
+for each row execute function public.set_updated_at();
+
 create or replace function public.is_admin()
 returns boolean
 language sql
@@ -96,6 +135,7 @@ $$;
 alter table public.admin_users enable row level security;
 alter table public.site_media enable row level security;
 alter table public.site_videos enable row level security;
+alter table public.site_texts enable row level security;
 
 drop policy if exists "Admin users can read own status" on public.admin_users;
 create policy "Admin users can read own status"
@@ -194,6 +234,42 @@ with check (public.is_admin());
 drop policy if exists "Admins can delete videos" on public.site_videos;
 create policy "Admins can delete videos"
 on public.site_videos
+for delete
+to authenticated
+using (public.is_admin());
+
+drop policy if exists "Public can read active texts" on public.site_texts;
+create policy "Public can read active texts"
+on public.site_texts
+for select
+to anon, authenticated
+using (is_active = true);
+
+drop policy if exists "Admins can read all texts" on public.site_texts;
+create policy "Admins can read all texts"
+on public.site_texts
+for select
+to authenticated
+using (public.is_admin());
+
+drop policy if exists "Admins can insert texts" on public.site_texts;
+create policy "Admins can insert texts"
+on public.site_texts
+for insert
+to authenticated
+with check (public.is_admin());
+
+drop policy if exists "Admins can update texts" on public.site_texts;
+create policy "Admins can update texts"
+on public.site_texts
+for update
+to authenticated
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "Admins can delete texts" on public.site_texts;
+create policy "Admins can delete texts"
+on public.site_texts
 for delete
 to authenticated
 using (public.is_admin());

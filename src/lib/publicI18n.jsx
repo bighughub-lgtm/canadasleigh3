@@ -5,6 +5,7 @@ import {
   SUPPORTED_LOCALES,
   getLocaleText,
 } from '../content/publicTranslations'
+import { getActiveTextOverrides } from './cmsApi'
 
 const STORAGE_KEY = 'canadasleigh_public_locale'
 
@@ -18,6 +19,67 @@ const legacyLocaleMap = {
 }
 
 const LocaleContext = createContext(null)
+
+function isNumericSegment(segment) {
+  return /^\d+$/.test(segment)
+}
+
+function cloneTranslationValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(cloneTranslationValue)
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.entries(value).reduce((copy, [key, child]) => {
+      copy[key] = cloneTranslationValue(child)
+      return copy
+    }, {})
+  }
+
+  return value
+}
+
+function applyTextOverride(target, textKey, nextValue) {
+  if (typeof nextValue !== 'string') return
+
+  const segments = String(textKey || '').split('.').filter(Boolean)
+  if (segments.length === 0) return
+
+  let current = target
+
+  for (let index = 0; index < segments.length - 1; index += 1) {
+    if (!current || typeof current !== 'object') return
+
+    const segment = segments[index]
+    const key = isNumericSegment(segment) ? Number(segment) : segment
+    current = current[key]
+  }
+
+  if (!current || typeof current !== 'object') return
+
+  const leafSegment = segments[segments.length - 1]
+  const leafKey = isNumericSegment(leafSegment) ? Number(leafSegment) : leafSegment
+
+  if (typeof current[leafKey] === 'string') {
+    current[leafKey] = nextValue
+  }
+}
+
+function mergeTextOverrides(baseText, overrides, locale) {
+  const mergedText = cloneTranslationValue(baseText)
+  const valueKey = `value_${normalizeLocale(locale)}`
+
+  overrides.forEach((override) => {
+    if (override?.is_active === false) return
+    const nextValue = override?.[valueKey]
+
+    if (nextValue !== null && nextValue !== undefined) {
+      applyTextOverride(mergedText, override.text_key, nextValue)
+    }
+  })
+
+  return mergedText
+}
 
 export function normalizeLocale(value) {
   if (!value) return DEFAULT_LOCALE
@@ -53,6 +115,7 @@ export function pickLocalizedField(item, field, locale, fallback = '') {
 
 export function LocaleProvider({ children }) {
   const [locale, setLocaleState] = useState(getInitialLocale)
+  const [textOverrides, setTextOverrides] = useState([])
 
   useEffect(() => {
     document.documentElement.lang = locale
@@ -65,20 +128,42 @@ export function LocaleProvider({ children }) {
     }
   }, [locale])
 
+  useEffect(() => {
+    let active = true
+    setTextOverrides([])
+
+    getActiveTextOverrides(locale)
+      .then((rows) => {
+        if (active) setTextOverrides(rows)
+      })
+      .catch(() => {
+        if (active) setTextOverrides([])
+      })
+
+    return () => {
+      active = false
+    }
+  }, [locale])
+
   const setLocale = (nextLocale) => {
     setLocaleState(normalizeLocale(nextLocale))
   }
+
+  const text = useMemo(
+    () => mergeTextOverrides(getLocaleText(locale), textOverrides, locale),
+    [locale, textOverrides],
+  )
 
   const value = useMemo(
     () => ({
       locale,
       setLocale,
-      text: getLocaleText(locale),
+      text,
       localeOptions: LOCALE_OPTIONS,
       activeLocaleLabel:
         LOCALE_OPTIONS.find((option) => option.locale === locale)?.label ?? 'LAT',
     }),
-    [locale],
+    [locale, text],
   )
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>

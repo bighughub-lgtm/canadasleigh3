@@ -44,6 +44,23 @@ const VIDEO_COLUMNS = [
   'updated_at',
 ].join(',')
 
+const TEXT_COLUMNS = [
+  'text_key',
+  'group_id',
+  'label_lv',
+  'description_lv',
+  'input_type',
+  'value_lv',
+  'value_en',
+  'value_ru',
+  'default_lv',
+  'default_en',
+  'default_ru',
+  'is_active',
+  'created_at',
+  'updated_at',
+].join(',')
+
 function safeArray(data) {
   return Array.isArray(data) ? data : []
 }
@@ -112,6 +129,24 @@ export async function getActiveVideos() {
       .eq('is_active', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: true })
+
+    if (error) return []
+    return safeArray(data)
+  } catch {
+    return []
+  }
+}
+
+export async function getActiveTextOverrides(_locale) {
+  if (!supabaseConfigured || !supabase) return []
+
+  try {
+    const { data, error } = await supabase
+      .from('site_texts')
+      .select(TEXT_COLUMNS)
+      .eq('is_active', true)
+      .order('group_id', { ascending: true })
+      .order('text_key', { ascending: true })
 
     if (error) return []
     return safeArray(data)
@@ -429,4 +464,81 @@ export async function adminDeleteVideo(id) {
   const client = ensureClient()
   const { error } = await client.from('site_videos').delete().eq('id', id)
   if (error) throw error
+}
+
+export async function adminListTexts() {
+  const client = ensureClient()
+  const { data, error } = await client
+    .from('site_texts')
+    .select(TEXT_COLUMNS)
+    .order('group_id', { ascending: true })
+    .order('text_key', { ascending: true })
+
+  if (error) throw error
+  return safeArray(data)
+}
+
+export async function adminUpsertText(payload) {
+  const client = ensureClient()
+  const { data, error } = await client
+    .from('site_texts')
+    .upsert(payload, { onConflict: 'text_key' })
+    .select(TEXT_COLUMNS)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function adminUpdateText(key, payload) {
+  const client = ensureClient()
+  const { data, error } = await client
+    .from('site_texts')
+    .update(payload)
+    .eq('text_key', key)
+    .select(TEXT_COLUMNS)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function adminResetTextOverride(key) {
+  return adminUpdateText(key, {
+    value_lv: null,
+    value_en: null,
+    value_ru: null,
+    is_active: true,
+  })
+}
+
+export async function adminDeleteText(key) {
+  const client = ensureClient()
+  const { error } = await client.from('site_texts').delete().eq('text_key', key)
+  if (error) throw error
+}
+
+export async function adminBulkUpsertTextDefaults(items) {
+  const client = ensureClient()
+  const payload = safeArray(items).map((item) => ({
+    text_key: item.key ?? item.text_key,
+    group_id: item.group_id,
+    label_lv: item.label_lv,
+    description_lv: item.description_lv ?? null,
+    input_type: item.input_type ?? 'text',
+    default_lv: item.default_lv ?? '',
+    default_en: item.default_en ?? '',
+    default_ru: item.default_ru ?? '',
+    is_active: item.is_active ?? true,
+  }))
+
+  if (payload.length === 0) return []
+
+  const { data, error } = await client
+    .from('site_texts')
+    .upsert(payload, { onConflict: 'text_key' })
+    .select(TEXT_COLUMNS)
+
+  if (error) throw error
+  return safeArray(data)
 }
