@@ -1,10 +1,13 @@
 import './ApvidusFeature.css'
 import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 /* Light-background section — dark PNG /apvidus kamanas.png looks correct here */
 export default function ApvidusFeature() {
-  const featureImage = useImageSlot('apvidus_feature', '/apvidus kamanas.png', 'Apvidus kamanas')
+  const { text } = useLocale()
+  const featureText = text.apvidusFeature
+  const featureImage = useImageSlot('apvidus_feature', '/apvidus kamanas.png', featureText.imageAlt)
 
   return (
     <section className="apvidus-feature">
@@ -16,22 +19,18 @@ export default function ApvidusFeature() {
           viewport={{ once: true }}
           transition={{ duration: 0.65 }}
         >
-          <span className="apvidus-label">Apvidus kamanas</span>
+          <span className="apvidus-label">{featureText.label}</span>
           <h2 className="apvidus-title">
-            Ragavas, kas iet<br />tur, kur citi nevar
+            {featureText.titleLine1}<br />{featureText.titleLine2}
           </h2>
           <p className="apvidus-sub">
-            Canada Pulkan apvidus ragavas ir izstrādātas smagumu transportēšanai
-            bezceļu apstākļos. Tās ir ļoti elastīgas un viegli velkamas — slīd
-            kā pa sniegu pāri dažādām virsmām. Pateicoties materiāla elastībai,
-            ragavas izlokās starp kokiem, celmiem un akmeņiem, nevis lūst.
+            {featureText.paragraphs[0]}
           </p>
           <p className="apvidus-sub" style={{ marginTop: 12 }}>
-            <strong>Svarīgi:</strong> ragavas nav paredzētas vilkšanai pa grants ceļiem.
-            Ievērojot šo nosacījumu, tās ir praktiski nenolietojamas.
+            <strong>{featureText.important}</strong> {featureText.paragraphs[1]}
           </p>
           <a href="#produkti" className="apvidus-btn">
-            Skatīties modeļus
+            {featureText.cta}
           </a>
         </motion.div>
 

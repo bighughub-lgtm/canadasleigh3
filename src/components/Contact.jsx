@@ -1,6 +1,7 @@
 import './Contact.css'
 import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 const contactCards = [
   {
@@ -51,7 +52,9 @@ const contactCards = [
 ]
 
 export default function Contact() {
-  const contactImage = useImageSlot('contact', '/KRJ02364.jpg', 'Canada Pulkan apvidus ragavas')
+  const { text } = useLocale()
+  const contact = text.contact
+  const contactImage = useImageSlot('contact', '/KRJ02364.jpg', contact.imageAlt)
 
   return (
     <section className="section contact" id="kontakti">
@@ -64,41 +67,42 @@ export default function Contact() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span className="section-label">Kontakti</span>
+            <span className="section-label">{contact.label}</span>
             <h2 className="section-title">
-              Gatavs pasūtīt<br />vai jautāt?
+              {contact.titleLine1}<br />{contact.titleLine2}
             </h2>
             <p className="section-subtitle" style={{ marginBottom: 44 }}>
-              Sazinieties ar mums — atbildēsim ātri un palīdzēsim
-              izvēlēties piemērotāko modeli jūsu vajadzībām.
+              {contact.subtitle}
             </p>
 
             <div className="contact-cards">
-              {contactCards.map((c, i) =>
-                c.href ? (
-                  <a key={i} href={c.href} className="contact-card">
+              {contactCards.map((c, i) => {
+                const card = contact.cards[i]
+
+                return card.href ? (
+                  <a key={card.value} href={card.href} className="contact-card">
                     <div className="contact-card-icon">{c.icon}</div>
                     <div>
-                      <div className="contact-card-label">{c.label}</div>
-                      <div className="contact-card-value">{c.value}</div>
+                      <div className="contact-card-label">{card.label}</div>
+                      <div className="contact-card-value">{card.value}</div>
                     </div>
                   </a>
                 ) : (
-                  <div key={i} className="contact-card contact-card--static">
+                  <div key={card.value} className="contact-card contact-card--static">
                     <div className="contact-card-icon">{c.icon}</div>
                     <div>
-                      <div className="contact-card-label">{c.label}</div>
-                      <div className="contact-card-value">{c.value}</div>
+                      <div className="contact-card-label">{card.label}</div>
+                      <div className="contact-card-value">{card.value}</div>
                     </div>
                   </div>
                 )
-              )}
+              })}
             </div>
 
             {/* STRIPE: Replace href="#produkti" with your main Stripe checkout URL when ready */}
             <div className="contact-cta">
               <a href="#produkti" className="btn-primary" style={{ fontSize: 16, padding: '15px 40px' }}>
-                Skatīties ragavu modeļus
+                {contact.cta}
               </a>
             </div>
           </motion.div>
@@ -124,7 +128,7 @@ export default function Contact() {
                 loading="lazy"
                 decoding="async"
               />
-              <p>VS Home SIA · oficiālais pārstāvis Baltijā</p>
+              <p>{contact.overlay}</p>
             </div>
           </motion.div>
         </div>

@@ -2,13 +2,16 @@ import './Hero.css'
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 const HERO_VIDEO_SRC = '/heroooAT.mp4'
 const HERO_FALLBACK_IMAGE = '/statiska bilde.jpg'
 
 export default function Hero() {
+  const { text } = useLocale()
+  const heroText = text.hero
   const videoRef = useRef(null)
-  const heroImage = useImageSlot('hero', HERO_FALLBACK_IMAGE, 'Canada apvidus ragavas sākuma skatā')
+  const heroImage = useImageSlot('hero', HERO_FALLBACK_IMAGE, heroText.imageAlt)
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
   const [videoFailed, setVideoFailed] = useState(false)
@@ -139,7 +142,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <span className="hero-label">VS HOME Officiālais izplatītājs Baltijā</span>
+          <span className="hero-label">{heroText.label}</span>
         </motion.div>
 
         <motion.h1
@@ -148,8 +151,8 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          Canada<br />
-          <span className="hero-title-accent">Apvidus Ragavas</span>
+          {heroText.title.line1}<br />
+          <span className="hero-title-accent">{heroText.title.line2}</span>
         </motion.h1>
 
         <motion.p
@@ -158,7 +161,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          Komforts, kad tas ir nepieciešams visvairāk
+          {heroText.slogan}
         </motion.p>
 
         <motion.div
@@ -167,8 +170,8 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <a href="#produkti" className="btn-primary">Skatīties modeļus</a>
-          <a href="#kontakti" className="btn-outline">Sazināties</a>
+          <a href="#produkti" className="btn-primary">{heroText.primaryCta}</a>
+          <a href="#kontakti" className="btn-outline">{heroText.secondaryCta}</a>
         </motion.div>
 
         <motion.div
@@ -181,7 +184,7 @@ export default function Hero() {
             type="button"
             className="hero-ctrl-btn"
             onClick={togglePlay}
-            aria-label={playing ? 'Pauze' : 'Atskaņot'}
+            aria-label={playing ? heroText.pause : heroText.play}
           >
             {playing ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -199,7 +202,7 @@ export default function Hero() {
             type="button"
             className="hero-ctrl-btn"
             onClick={toggleMute}
-            aria-label={muted ? 'Ieslēgt skaņu' : 'Izslēgt skaņu'}
+            aria-label={muted ? heroText.unmute : heroText.mute}
           >
             {muted ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -225,7 +228,7 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 0.7 }}
       >
-        <span>Ritināt</span>
+        <span>{heroText.scroll}</span>
         <div className="hero-scroll-line" />
       </motion.div>
     </section>

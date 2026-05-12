@@ -1,14 +1,17 @@
 import { Link, NavLink } from 'react-router-dom'
 import './LegalLayout.css'
-
-const LEGAL_LINKS = [
-  { to: '/sikdatnu-politika', label: 'Sīkdatņu politika' },
-  { to: '/piegade-atgriešana', label: 'Piegāde un atgriešana' },
-  { to: '/privatuma-politika', label: 'Privātuma politika' },
-  { to: '/pirksanas-noteikumi', label: 'Pirkšanas noteikumi' },
-]
+import { useLocale } from '../lib/publicI18n.jsx'
 
 export default function LegalLayout({ title, effectiveDate, children }) {
+  const { text } = useLocale()
+  const legalText = text.legal
+  const legalLinks = [
+    { to: '/sikdatnu-politika', label: legalText.titles.cookies },
+    { to: '/piegade-atgriešana', label: legalText.titles.deliveryReturns },
+    { to: '/privatuma-politika', label: legalText.titles.privacy },
+    { to: '/pirksanas-noteikumi', label: legalText.titles.purchaseTerms },
+  ]
+
   return (
     <div className="legal-layout">
       <div className="legal-layout__hero">
@@ -23,11 +26,11 @@ export default function LegalLayout({ title, effectiveDate, children }) {
                 strokeLinejoin="round"
               />
             </svg>
-            Atpakaļ uz sākumlapu
+            {legalText.back}
           </Link>
 
-          <nav className="legal-layout__nav" aria-label="Juridisko lapu navigācija">
-            {LEGAL_LINKS.map((link) => (
+          <nav className="legal-layout__nav" aria-label={legalText.navAria}>
+            {legalLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -41,10 +44,10 @@ export default function LegalLayout({ title, effectiveDate, children }) {
           </nav>
 
           <div className="legal-layout__title-block">
-            <p className="legal-layout__eyebrow">Juridiskā informācija</p>
+            <p className="legal-layout__eyebrow">{legalText.eyebrow}</p>
             <h1 className="legal-layout__title">{title}</h1>
             {effectiveDate ? (
-              <p className="legal-layout__meta">Spēkā no: {effectiveDate}</p>
+              <p className="legal-layout__meta">{legalText.effectiveFrom} {effectiveDate}</p>
             ) : null}
           </div>
         </div>

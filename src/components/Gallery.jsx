@@ -1,103 +1,15 @@
 import './Gallery.css'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { pickLocalizedField, useLocale } from '../lib/publicI18n.jsx'
 
-const fallbackGalleryImages = [
-  {
-    src: '/DSC06432.jpg',
-    alt: 'Canada Pulkan ragavas reālā meža maršrutā',
-    title: 'Meža maršruts',
-    sort_order: 1,
-  },
-  {
-    src: '/KRJ02427.jpg',
-    alt: 'Ragavas skarbā apvidū',
-    title: 'Apvidus darbs',
-    sort_order: 2,
-  },
-  {
-    src: '/KRJ02257.jpg',
-    alt: 'Ragavas pārvietošanas brīdī',
-    title: 'Vilcēja līnija',
-    sort_order: 3,
-  },
-  {
-    src: '/hngfbdv.jpg',
-    alt: 'Ragavas meža un lauka apstākļos',
-    title: 'Pārvadājums dabā',
-    sort_order: 4,
-  },
-  {
-    src: '/rtdgf.jpg',
-    alt: 'Tuvplāna kadrs ar ragavām dabiskā vidē',
-    title: 'Tuvplāna kadrs',
-    sort_order: 5,
-  },
-  {
-    src: '/yuthgdf.jpg',
-    alt: 'Ragavas mežā un smaguma transportēšanā',
-    title: 'Noslēdzošais kadrs',
-    sort_order: 6,
-  },
-  {
-    src: '/DSC06417.jpg',
-    alt: 'Canada Pulkan ragavas slīpākā meža posmā',
-    title: 'Stāvā trase',
-    sort_order: 7,
-  },
-  {
-    src: '/KRJ02364.jpg',
-    alt: 'Ragavas smaguma pārvietošanai mežā',
-    title: 'Meža transportēšana',
-    sort_order: 8,
-  },
-  {
-    src: '/htgbfdf.jpg',
-    alt: 'Ragavas nelīdzenā reljefā',
-    title: 'Nelīdzens reljefs',
-    sort_order: 9,
-  },
-  {
-    src: '/KRJ01743.jpg',
-    alt: 'Ragavas smagākai kravai apvidū',
-    title: 'Kravas maršruts',
-    sort_order: 10,
-  },
-  {
-    src: '/thrgdf.jpg',
-    alt: 'Ragavas autentiskā lietošanā dabā',
-    title: 'Pierādīta lietošana',
-    sort_order: 11,
-  },
-  {
-    src: '/ytr.jpg',
-    alt: 'Vertikāls bezceļa kadrs ar ragavām',
-    title: 'Bezceļa aina',
-    sort_order: 12,
-  },
-]
-
-const galleryText = {
-  count: (count) => `Galerijā redzami ${count} attēli.`,
-  openFullscreen: 'Atvērt pilnekrāna galeriju',
-  close: 'Aizvērt',
-  previous: 'Iepriekšējais attēls',
-  next: 'Nākamais attēls',
-  zoom: 'Tālummaiņa',
-  image: (number) => `Attēls ${String(number).padStart(2, '0')}`,
-}
-
-function textFallback(item, field, fallback = '') {
-  return item[`${field}_lv`] || item[`${field}_en`] || item[`${field}_ru`] || fallback
-}
-
-function normalizeGalleryImages(items) {
+function normalizeGalleryImages(items, locale, galleryText) {
   return items
     .filter((item) => item?.src || item?.url)
     .map((item, index) => {
       const src = item.src || item.url
-      const title = item.title || textFallback(item, 'title', '')
-      const alt = item.alt || textFallback(item, 'alt', title || galleryText.image(index + 1))
+      const title = pickLocalizedField(item, 'title', locale, '')
+      const alt = pickLocalizedField(item, 'alt', locale, title || galleryText.image(index + 1))
 
       return {
         src,
@@ -110,7 +22,9 @@ function normalizeGalleryImages(items) {
 }
 
 export default function Gallery() {
-  const [galleryImages, setGalleryImages] = useState(() => normalizeGalleryImages(fallbackGalleryImages))
+  const { text, locale } = useLocale()
+  const galleryText = text.gallery
+  const [cmsGalleryImages, setCmsGalleryImages] = useState([])
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [fullscreenOpen, setFullscreenOpen] = useState(false)
   const [zoom, setZoom] = useState(100)
@@ -133,7 +47,7 @@ export default function Gallery() {
       .then(({ getActiveMedia }) => getActiveMedia('gallery'))
       .then((media) => {
         if (!active || media.length === 0) return
-        setGalleryImages(normalizeGalleryImages(media))
+        setCmsGalleryImages(media)
       })
       .catch(() => {})
 
@@ -141,6 +55,16 @@ export default function Gallery() {
       active = false
     }
   }, [])
+
+  const galleryImages = useMemo(
+    () =>
+      normalizeGalleryImages(
+        cmsGalleryImages.length ? cmsGalleryImages : galleryText.fallbackImages,
+        locale,
+        galleryText,
+      ),
+    [cmsGalleryImages, galleryText, locale],
+  )
 
   const visibleImages = useMemo(
     () => galleryImages.filter((image) => image.src && !brokenSources.has(image.src)),
@@ -283,10 +207,10 @@ export default function Gallery() {
           viewport={{ once: true }}
           transition={{ duration: 0.65 }}
         >
-          <span className="section-label">Galerija</span>
-          <h2 className="section-title">Atlasīta izlase no reālas lietošanas</h2>
+          <span className="section-label">{galleryText.label}</span>
+          <h2 className="section-title">{galleryText.title}</h2>
           <p className="section-subtitle">
-            Īss ieskats brīžos, kuros Canada apvidus ragavas sevi pierāda bezceļa un mežā apstākļos.
+            {galleryText.subtitle}
           </p>
         </motion.div>
 
@@ -312,7 +236,7 @@ export default function Gallery() {
               />
               <div className="gallery-main-shade" />
               <div className="gallery-main-copy">
-                <span>Aktīvais attēls</span>
+                <span>{galleryText.activeImage}</span>
                 <p>{selectedImage.title || selectedImage.alt}</p>
               </div>
               <span className="gallery-expand-btn" aria-hidden="true">
@@ -328,9 +252,9 @@ export default function Gallery() {
               </span>
             </button>
 
-            <aside className="gallery-thumbs" aria-label="Galerijas sīktēli">
+            <aside className="gallery-thumbs" aria-label={galleryText.thumbsLabel}>
               <div className="gallery-thumbs-head">
-                <span>Visi attēli</span>
+                <span>{galleryText.allImages}</span>
                 <strong>{visibleImages.length}</strong>
               </div>
 
@@ -361,7 +285,7 @@ export default function Gallery() {
           <div className="gallery-footer">
             <p>{galleryText.count(visibleImages.length)}</p>
             <button type="button" className="gallery-more-btn" onClick={openFullscreen}>
-              Atvērt pilnekrāna galeriju
+              {galleryText.openFullscreen}
             </button>
           </div>
         </motion.div>
@@ -381,7 +305,7 @@ export default function Gallery() {
               className="gallery-modal-panel"
               role="dialog"
               aria-modal="true"
-              aria-label="Pilnekrāna galerija"
+              aria-label={galleryText.fullscreenLabel}
               initial={{ opacity: 0, y: 18, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 18, scale: 0.98 }}
@@ -450,7 +374,7 @@ export default function Gallery() {
                 </button>
               </div>
 
-              <div className="gallery-modal-thumbs" aria-label="Pilnekrāna galerijas sīktēli">
+              <div className="gallery-modal-thumbs" aria-label={galleryText.fullscreenThumbsLabel}>
                 {visibleImages.map((image, index) => (
                   <button
                     key={image.src}

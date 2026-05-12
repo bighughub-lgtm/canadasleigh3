@@ -1,18 +1,12 @@
 import './Benefits.css'
 import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
-
-const benefits = [
-  'Neplaisā atsitoties pret akmeņiem un var izturēt auto pārbraukšanu pāri tām',
-  'Izlokās starp kokiem, celmiem un akmeņiem — ideāli bezceļa apstākļiem',
-  'Darbojas gan stiprā aukstumā, gan karstā laikā — visu gadu',
-  'Viegli kopjamas — neabsorbē mitrumu, smakas vai netīrumus',
-  'Higiēniskāka medījuma transportēšana — nesasmērē, saglabā gaļu tīru',
-  'Noderīgas arī baļķiem, lauksaimniecības produktiem un kā nestuves ārkārtās situācijās',
-]
+import { useLocale } from '../lib/publicI18n.jsx'
 
 export default function Benefits() {
-  const benefitsImage = useImageSlot('benefits', '/KRJ01720.jpg', 'Canada Pulkan apvidus ragavas lietošanā')
+  const { text } = useLocale()
+  const benefits = text.benefits
+  const benefitsImage = useImageSlot('benefits', '/KRJ01720.jpg', benefits.imageAlt)
 
   return (
     <section className="section benefits" id="priekšrocības">
@@ -25,15 +19,14 @@ export default function Benefits() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span className="section-label">Priekšrocības</span>
-            <h2 className="section-title">Kāpēc izvēlēties Canada apvidus ragavas?</h2>
+            <span className="section-label">{benefits.label}</span>
+            <h2 className="section-title">{benefits.title}</h2>
             <p className="section-subtitle" style={{ marginBottom: 36 }}>
-              Gadiem testētas Skandināvijas kalnainajos apvidos — ragavas, kas kalpos
-              tikpat ilgi, cik pareizi tās lieto.
+              {benefits.subtitle}
             </p>
 
             <ul className="benefits-list">
-              {benefits.map((b, i) => (
+              {benefits.items.map((b, i) => (
                 <motion.li
                   key={i}
                   className="benefit-item"
@@ -66,8 +59,8 @@ export default function Benefits() {
               decoding="async"
             />
             <div className="benefits-badge">
-              <span className="benefits-badge-label">Medību sezona</span>
-              <strong>Canada apvidus ragavas lietošanā</strong>
+              <span className="benefits-badge-label">{benefits.badgeLabel}</span>
+              <strong>{benefits.badgeText}</strong>
             </div>
           </motion.div>
         </div>

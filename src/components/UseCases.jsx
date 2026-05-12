@@ -1,5 +1,6 @@
 import './UseCases.css'
 import { motion } from 'framer-motion'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 const cases = [
   {
@@ -9,8 +10,6 @@ const cases = [
         <polyline points="9 22 9 12 15 12 15 22" stroke="var(--gold)" strokeWidth="1.6" strokeLinejoin="round"/>
       </svg>
     ),
-    title: 'Medībām',
-    desc: 'Viegli pārvadājiet medījumu un aprīkojumu pa mežu un bezceļiem. Higiēniska un ērta transportēšana.',
   },
   {
     icon: (
@@ -19,8 +18,6 @@ const cases = [
         <path d="M13 19.5V14l-2.5 1.5L8 14v5.5M6 22h12" stroke="var(--gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
-    title: 'Makšķerēšanai',
-    desc: 'Ērts risinājums ziemas makšķerēšanas piederumu un nozvejas transportēšanai.',
   },
   {
     icon: (
@@ -29,8 +26,6 @@ const cases = [
         <path d="M12 6v6l4 2" stroke="var(--gold)" strokeWidth="1.6" strokeLinecap="round"/>
       </svg>
     ),
-    title: 'Lauksaimniecībai',
-    desc: 'Pārvietojiet ražu un lauksaimniecības materiālus bez regulāriem ceļiem un grūtos laukos.',
   },
   {
     icon: (
@@ -40,8 +35,6 @@ const cases = [
         <circle cx="17" cy="6" r="2" stroke="var(--gold)" strokeWidth="1.6"/>
       </svg>
     ),
-    title: 'Mežistrādei',
-    desc: 'Ideāli darbam starp kokiem, celmiem un akmeņiem — baļķu izvešanai, berammalkas jeb bluķu transportēšanai.',
   },
   {
     icon: (
@@ -49,8 +42,6 @@ const cases = [
         <polygon points="3 11 22 2 13 21 11 13 3 11" stroke="var(--gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
-    title: 'Ekspedīcijām',
-    desc: 'Uzticams pavadonis ilgstošās ekspedīcijās aukstā jeb karstā klimatā. Izturīgs no +40°C līdz −40°C.',
   },
   {
     icon: (
@@ -60,12 +51,13 @@ const cases = [
         <line x1="12" y1="22.08" x2="12" y2="12" stroke="var(--gold)" strokeWidth="1.6"/>
       </svg>
     ),
-    title: 'Smagu kravu pārvadāšanai',
-    desc: 'Droša un efektīva smagu kravu transportēšana bezceļa apstākļos — jebkurā sezonā.',
   },
 ]
 
 export default function UseCases() {
+  const { text } = useLocale()
+  const useCases = text.useCases
+
   return (
     <section className="section use-cases" id="pielietojums">
       <div className="container">
@@ -75,10 +67,10 @@ export default function UseCases() {
           viewport={{ once: true }}
           transition={{ duration: 0.65 }}
         >
-          <span className="section-label">Pielietojums</span>
-          <h2 className="section-title">Kur noderēs Canada apvidus ragavas?</h2>
+          <span className="section-label">{useCases.label}</span>
+          <h2 className="section-title">{useCases.title}</h2>
           <p className="section-subtitle">
-            Izstrādātas skarbajai dabai — ragavas, kas darbojas jebkurā vidē un reljefā.
+            {useCases.subtitle}
           </p>
         </motion.div>
 
@@ -93,8 +85,8 @@ export default function UseCases() {
               transition={{ delay: i * 0.08, duration: 0.6 }}
             >
               <div className="use-case-icon">{c.icon}</div>
-              <h3 className="use-case-title">{c.title}</h3>
-              <p className="use-case-desc">{c.desc}</p>
+              <h3 className="use-case-title">{useCases.cases[i].title}</h3>
+              <p className="use-case-desc">{useCases.cases[i].desc}</p>
             </motion.div>
           ))}
         </div>

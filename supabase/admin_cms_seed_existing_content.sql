@@ -185,6 +185,62 @@ set sort_order = ranked.row_index
 from ranked
 where public.site_media.id = ranked.id;
 
+with seed(section, url, title_en, title_ru, alt_en, alt_ru) as (
+  values
+    ('gallery', '/DSC06432.jpg', 'Forest route', 'Лесной маршрут', 'Canada Pulkan sled on a real forest route', 'Сани Canada Pulkan на реальном лесном маршруте'),
+    ('gallery', '/KRJ02427.jpg', 'Terrain work', 'Работа на рельефе', 'Sled in rugged terrain', 'Сани на сложном рельефе'),
+    ('gallery', '/KRJ02257.jpg', 'Pulling line', 'Линия тяги', 'Sled while being moved', 'Сани в момент перемещения'),
+    ('gallery', '/hngfbdv.jpg', 'Outdoor transport', 'Перевозка на природе', 'Sled in forest and field conditions', 'Сани в лесных и полевых условиях'),
+    ('gallery', '/rtdgf.jpg', 'Close-up frame', 'Крупный план', 'Close-up of the sled in a natural setting', 'Крупный план саней в естественной среде'),
+    ('gallery', '/yuthgdf.jpg', 'Final frame', 'Финальный кадр', 'Sled in the forest during heavy-load transport', 'Сани в лесу при перевозке груза'),
+    ('gallery', '/DSC06417.jpg', 'Steep route', 'Крутая трасса', 'Canada Pulkan sled on a steeper forest section', 'Сани Canada Pulkan на более крутом лесном участке'),
+    ('gallery', '/KRJ02364.jpg', 'Forest transport', 'Лесная перевозка', 'Sled for heavy-load movement in the forest', 'Сани для перемещения тяжёлого груза в лесу'),
+    ('gallery', '/htgbfdf.jpg', 'Uneven terrain', 'Неровный рельеф', 'Sled on uneven terrain', 'Сани на неровном рельефе'),
+    ('gallery', '/KRJ01743.jpg', 'Load route', 'Маршрут с грузом', 'Sled for heavier cargo in terrain', 'Сани для более тяжёлого груза на рельефе'),
+    ('gallery', '/thrgdf.jpg', 'Proven use', 'Проверенное применение', 'Sled in authentic outdoor use', 'Сани в реальном использовании на природе'),
+    ('gallery', '/ytr.jpg', 'Off-road scene', 'Сцена бездорожья', 'Vertical off-road frame with the sled', 'Вертикальный кадр бездорожья с санями'),
+    ('product_compact_gallery', '/sm1.jpeg', 'Compact model in use', 'Компактная модель в работе', 'TERRAINSLEIGH CANADA COMPACT sled from the side', 'Сани TERRAINSLEIGH CANADA COMPACT сбоку'),
+    ('product_compact_gallery', '/sm2.jpeg', 'Shape and depth for heavy pulling', 'Форма и глубина для тяжёлой тяги', 'TERRAINSLEIGH CANADA COMPACT sled in the forest', 'Сани TERRAINSLEIGH CANADA COMPACT в лесу'),
+    ('product_compact_gallery', '/sm3.jpeg', 'Compact profile for everyday use', 'Компактный профиль для повседневного использования', 'TERRAINSLEIGH CANADA COMPACT sled close-up', 'Сани TERRAINSLEIGH CANADA COMPACT крупным планом'),
+    ('product_compact_gallery', '/sm4.jpeg', 'Practical load capacity for hunting and fishing', 'Практичная грузоподъёмность для охоты и рыбалки', 'TERRAINSLEIGH CANADA COMPACT sled with equipment', 'Сани TERRAINSLEIGH CANADA COMPACT со снаряжением'),
+    ('product_compact_gallery', '/sm5.jpeg', 'Easy-care HD material', 'Простой в уходе HD материал', 'TERRAINSLEIGH CANADA COMPACT sled on the ground', 'Сани TERRAINSLEIGH CANADA COMPACT на земле'),
+    ('product_compact_gallery', '/sm6.jpg', 'Flexibility in difficult terrain', 'Гибкость на сложном рельефе', 'TERRAINSLEIGH CANADA COMPACT sled during transport', 'Сани TERRAINSLEIGH CANADA COMPACT при транспортировке'),
+    ('product_compact_gallery', '/sm7.jpg', 'Compact size with full practical value', 'Компактный размер с полноценной практической пользой', 'TERRAINSLEIGH CANADA COMPACT sled from above', 'Сани TERRAINSLEIGH CANADA COMPACT сверху'),
+    ('product_compact_gallery', '/sm8.jpg', 'Suitable for off-road work in the Baltics', 'Подходят для работы на бездорожье в странах Балтии', 'TERRAINSLEIGH CANADA COMPACT sled in use', 'Сани TERRAINSLEIGH CANADA COMPACT в использовании'),
+    ('product_classic_gallery', '/b1.jpeg', 'Full-size body for heavy loads', 'Полноразмерный корпус для тяжёлых грузов', 'TERRAINSLEIGH CANADA CLASSIC sled in use', 'Сани TERRAINSLEIGH CANADA CLASSIC в работе'),
+    ('product_classic_gallery', '/b2.jpeg', 'Stable pulling across difficult terrain', 'Стабильная тяга на сложном рельефе', 'TERRAINSLEIGH CANADA CLASSIC sled in forest terrain', 'Сани TERRAINSLEIGH CANADA CLASSIC на лесном рельефе'),
+    ('product_classic_gallery', '/b3.jpg', 'Durable 8 mm HD material', 'Прочный 8 мм HD материал', 'TERRAINSLEIGH CANADA CLASSIC sled close-up', 'Сани TERRAINSLEIGH CANADA CLASSIC крупным планом'),
+    ('product_classic_gallery', '/b4.jpeg', 'Suitable for large game and equipment', 'Подходят для крупной добычи и снаряжения', 'TERRAINSLEIGH CANADA CLASSIC sled with load', 'Сани TERRAINSLEIGH CANADA CLASSIC с грузом'),
+    ('product_classic_gallery', '/b5.jpeg', 'Flexibility between stumps and rocks', 'Гибкость между пнями и камнями', 'TERRAINSLEIGH CANADA CLASSIC sled from the side', 'Сани TERRAINSLEIGH CANADA CLASSIC сбоку'),
+    ('product_classic_gallery', '/b6.jpeg', 'Extra capacity for heavy transport', 'Дополнительная вместимость для тяжёлой перевозки', 'TERRAINSLEIGH CANADA CLASSIC sled size comparison', 'Сани TERRAINSLEIGH CANADA CLASSIC в сравнении размера'),
+    ('product_classic_gallery', '/b7.jpg', 'Model for longer routes in the Baltics', 'Модель для более длинных маршрутов в странах Балтии', 'TERRAINSLEIGH CANADA CLASSIC sled in off-road conditions', 'Сани TERRAINSLEIGH CANADA CLASSIC в условиях бездорожья'),
+    ('product_classic_open_gallery', '/a1.jpeg', 'Open model with a wide loading area', 'Открытая модель с широкой зоной загрузки', 'TERRAINSLEIGH CANADA CLASSIC OPEN sled in use', 'Сани TERRAINSLEIGH CANADA CLASSIC OPEN в работе'),
+    ('product_classic_open_gallery', '/a2.jpeg', 'Easy access to equipment and game', 'Удобный доступ к снаряжению и добыче', 'TERRAINSLEIGH CANADA CLASSIC OPEN sled in off-road conditions', 'Сани TERRAINSLEIGH CANADA CLASSIC OPEN в условиях бездорожья'),
+    ('product_classic_open_gallery', '/a3.jpeg', 'Compatible with the Xtension add-on up to 3.5 m', 'Совместимы с удлинителем Xtension до 3,5 m', 'TERRAINSLEIGH CANADA CLASSIC OPEN sled close-up', 'Сани TERRAINSLEIGH CANADA CLASSIC OPEN крупным планом'),
+    ('product_classic_open_gallery', '/a4.jpeg', 'Full-size solution for heavy loads in the Baltics', 'Полноразмерное решение для тяжёлых грузов в странах Балтии', 'TERRAINSLEIGH CANADA CLASSIC OPEN sled with load', 'Сани TERRAINSLEIGH CANADA CLASSIC OPEN с грузом'),
+    ('hero', '/statiska bilde.jpg', 'Opening view image', 'Изображение первого экрана', 'Canada rugged terrain sleds in the opening view', 'Сани Canada для бездорожья на первом экране'),
+    ('benefits', '/KRJ01720.jpg', 'Benefits section image', 'Изображение раздела преимуществ', 'Canada Pulkan terrain sleds in use', 'Сани Canada Pulkan для бездорожья в использовании'),
+    ('product_overview_compact', '/mazasragavas.jpg', 'Product overview — COMPACT', 'Обзор продукта — COMPACT', 'CANADA COMPACT sled in the product overview', 'Сани CANADA COMPACT в обзоре продукта'),
+    ('product_overview_classic', '/canadaplukan.jpg', 'Product overview — CLASSIC', 'Обзор продукта — CLASSIC', 'CANADA CLASSIC sled in the product overview', 'Сани CANADA CLASSIC в обзоре продукта'),
+    ('product_overview_classic_open', '/ragavasbig.png', 'Product overview — CLASSIC OPEN', 'Обзор продукта — CLASSIC OPEN', 'CANADA CLASSIC OPEN sled in the product overview', 'Сани CANADA CLASSIC OPEN в обзоре продукта'),
+    ('product_compact', '/mazasragavas.jpg', 'COMPACT product image', 'Изображение продукта COMPACT', 'CANADA COMPACT sled', 'Сани CANADA COMPACT'),
+    ('product_classic', '/canadaplukan.jpg', 'CLASSIC product image', 'Изображение продукта CLASSIC', 'CANADA CLASSIC sled', 'Сани CANADA CLASSIC'),
+    ('product_classic_open', '/ragavasbig.png', 'CLASSIC OPEN product image', 'Изображение продукта CLASSIC OPEN', 'CANADA CLASSIC OPEN sled', 'Сани CANADA CLASSIC OPEN'),
+    ('apvidus_feature', '/apvidus kamanas.png', 'Terrain section image', 'Изображение раздела бездорожья', 'Terrain sled', 'Сани для бездорожья'),
+    ('about', '/KRJ02427.jpg', 'About us section image', 'Изображение раздела о нас', 'Canada Pulkan in the Baltics', 'Canada Pulkan в странах Балтии'),
+    ('contact', '/KRJ02364.jpg', 'Contact section image', 'Изображение раздела контактов', 'Canada Pulkan terrain sleds', 'Сани Canada Pulkan для бездорожья'),
+    ('partners', '/PARTNERISSS.jpg', 'Partners section image', 'Изображение раздела партнёров', 'Canada sleds in a practical-use setting', 'Сани Canada в среде практического применения')
+)
+update public.site_media
+set
+  title_en = coalesce(nullif(public.site_media.title_en, ''), seed.title_en),
+  title_ru = coalesce(nullif(public.site_media.title_ru, ''), seed.title_ru),
+  alt_en = coalesce(nullif(public.site_media.alt_en, ''), seed.alt_en),
+  alt_ru = coalesce(nullif(public.site_media.alt_ru, ''), seed.alt_ru)
+from seed
+where public.site_media.section = seed.section
+  and public.site_media.url = seed.url;
+
 insert into public.site_videos (
   title_lv,
   description_lv,
@@ -217,3 +273,24 @@ where not exists (
   from public.site_videos existing
   where existing.video_url = seed.video_url
 );
+
+with seed(video_url, title_en, title_ru, description_en, description_ru) as (
+  values
+    ('/Vannas LAT.mp4', 'Full process from A to Z', 'Полный процесс от А до Я', 'A complete working process from start to finished result.', 'Полный рабочий процесс от начала до готового результата.'),
+    ('/small vid.mp4', 'Loading game into the compact tub', 'Как добыча помещается в компактную ванну', 'A practical example of how the compact tub is used for loading and transporting game.', 'Практический пример использования компактной ванны для загрузки и перевозки добычи.'),
+    ('https://www.youtube.com/watch?v=9uT6r90BZwY', 'Sleds in action', 'Сани в действии', 'A real example of how the sleds behave in practical outdoor use.', 'Реальный пример поведения саней в практическом использовании на природе.'),
+    ('https://www.youtube.com/watch?v=izPM9_FGDE0', 'Off-road use', 'Использование на бездорожье', 'A look at sled use in more difficult conditions and terrain.', 'Взгляд на использование саней в более сложных условиях и рельефе.'),
+    ('https://www.youtube.com/watch?v=dp_ivalzEe8', 'Moving and pulling', 'Перемещение и тяга', 'How the sleds are pulled and used in everyday work.', 'Как сани тянут и используют в повседневной работе.'),
+    ('https://www.youtube.com/watch?v=CKOWTuo_WJg', 'Load capacity in practice', 'Грузоподъёмность на практике', 'A practical look at sled capacity and use with heavier loads.', 'Практический взгляд на вместимость саней и их применение с более тяжёлыми грузами.'),
+    ('https://www.youtube.com/watch?v=v2EYZRFkakw', 'Work in forest conditions', 'Работа в лесных условиях', 'Sled use in the forest, between trees, stumps and uneven ground.', 'Применение саней в лесу, между деревьями, пнями и на неровном покрытии.'),
+    ('https://www.youtube.com/watch?v=t8JmTwOfBss', 'Durability and use cases', 'Прочность и применение', 'Another example showing the sleds’ durability and practical value.', 'Ещё один пример, показывающий прочность саней и их практическую ценность.'),
+    ('https://www.youtube.com/watch?v=KEZ34NNd6dY', 'Additional demonstration', 'Дополнительная демонстрация', 'Another real demonstration video of practical sled use.', 'Ещё одно реальное демонстрационное видео о практическом использовании саней.')
+)
+update public.site_videos
+set
+  title_en = coalesce(nullif(public.site_videos.title_en, ''), seed.title_en),
+  title_ru = coalesce(nullif(public.site_videos.title_ru, ''), seed.title_ru),
+  description_en = coalesce(nullif(public.site_videos.description_en, ''), seed.description_en),
+  description_ru = coalesce(nullif(public.site_videos.description_ru, ''), seed.description_ru)
+from seed
+where public.site_videos.video_url = seed.video_url;

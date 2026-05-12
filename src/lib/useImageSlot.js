@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { getImageSlot } from './cmsApi'
 import { getImageSlotDefinition } from './mediaSlots'
-
-function textFallback(item, field, fallback = '') {
-  return item?.[`${field}_lv`] || item?.[`${field}_en`] || item?.[`${field}_ru`] || fallback
-}
+import { pickLocalizedField, useLocale } from './publicI18n.jsx'
 
 export function useImageSlot(slotId, fallbackUrl, fallbackAlt = '', options = {}) {
+  const { locale } = useLocale()
   const slot = getImageSlotDefinition(slotId)
   const [media, setMedia] = useState(null)
   const legacySlotId = options.legacySlotId
@@ -36,6 +34,6 @@ export function useImageSlot(slotId, fallbackUrl, fallbackAlt = '', options = {}
   return {
     media,
     src: media?.url || safeFallbackUrl,
-    alt: textFallback(media, 'alt', safeFallbackAlt),
+    alt: pickLocalizedField(media, 'alt', locale, safeFallbackAlt),
   }
 }

@@ -2,60 +2,29 @@ import './ProductOverview.css'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
-
-const models = [
-  {
-    id: 'compact',
-    tabLabel: 'KOMPAKTS',
-    name: 'CANADA COMPACT',
-    spec: '1.4 x 0.65 m · 5 kg',
-    image: '/mazasragavas.jpg',
-    alt: 'CANADA COMPACT ragavas',
-  },
-  {
-    id: 'classic',
-    tabLabel: 'SLODZEI',
-    name: 'CANADA CLASSIC',
-    spec: '2.33 x 0.85 m · 14 kg',
-    image: '/canadaplukan.jpg',
-    alt: 'CANADA CLASSIC ragavas',
-  },
-  {
-    id: 'classic-open',
-    tabLabel: 'ATVĒRTAIS',
-    name: 'CANADA CLASSIC OPEN',
-    spec: '2.33 x 0.85 m · 14 kg',
-    image: '/ragavasbig.png',
-    alt: 'CANADA CLASSIC OPEN ragavas',
-  },
-]
-
-const features = [
-  { label: 'Materiāls', value: 'HD polietilēns (HDPE)' },
-  { label: 'Temperatūra', value: 'No −40°C līdz +40°C' },
-  { label: 'Savietojamība', value: 'ATV, sniega motocikls, rokas vilkšana' },
-  { label: 'Kopšana', value: 'Vienkārša — neabsorbē mitrumu vai smakas' },
-  { label: 'Lietojums', value: 'Visu gadu — ziemā un vasarā' },
-  { label: 'Ražots', value: 'Zviedrijā' },
-]
+import { useLocale } from '../lib/publicI18n.jsx'
 
 export default function ProductOverview() {
+  const { text } = useLocale()
+  const overview = text.productOverview
+  const models = overview.models
+  const features = overview.features
   const overviewCompactImage = useImageSlot(
     'product_overview_compact',
     '/mazasragavas.jpg',
-    'CANADA COMPACT ragavas produkta pārskatā',
+    overview.imageAlts.compact,
     { legacySlotId: 'product_overview' },
   )
   const overviewClassicImage = useImageSlot(
     'product_overview_classic',
     '/canadaplukan.jpg',
-    'CANADA CLASSIC ragavas produkta pārskatā',
+    overview.imageAlts.classic,
     { legacySlotId: 'product_classic' },
   )
   const overviewClassicOpenImage = useImageSlot(
     'product_overview_classic_open',
     '/ragavasbig.png',
-    'CANADA CLASSIC OPEN ragavas produkta pārskatā',
+    overview.imageAlts.classicOpen,
     { legacySlotId: 'product_classic_open' },
   )
   const [activeModelId, setActiveModelId] = useState(models[0].id)
@@ -89,7 +58,7 @@ export default function ProductOverview() {
             <div className="overview-panel">
               <div className="overview-topbar">
                 <div className="overview-model-meta">
-                  <span className="overview-model-kicker">3 modeļu līnija</span>
+                  <span className="overview-model-kicker">{overview.modelKicker}</span>
                   <div className="overview-model-name">{activeModel.name}</div>
                   <p>{activeModel.spec}</p>
                 </div>
@@ -101,11 +70,11 @@ export default function ProductOverview() {
                     loading="lazy"
                     decoding="async"
                   />
-                  <span>Ražots Zviedrijā</span>
+                  <span>{text.common.madeInSweden}</span>
                 </div>
               </div>
 
-              <div className="overview-switcher" role="tablist" aria-label="Modeļu izvēle">
+              <div className="overview-switcher" role="tablist" aria-label={overview.modelSelectorLabel}>
                 {modelsWithImages.map((model) => (
                   <button
                     key={model.id}
@@ -140,10 +109,10 @@ export default function ProductOverview() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span className="section-label">Produkta pārskats</span>
-            <h2 className="section-title">Testētas Skandināvijā. Ražotas Zviedrijā.</h2>
+            <span className="section-label">{overview.label}</span>
+            <h2 className="section-title">{overview.title}</h2>
             <p className="section-subtitle product-overview-subtitle">
-              Canada apvidus ragavas ir izgatavotas no īpaša HD polietilēna. Materiāls ir gan elastīgs, gan triecienizturīgs, tādēļ ragavas neplaisā atsitoties pret akmeņiem un saglabā savu formu arī pie smagas slodzes.
+              {overview.subtitle}
             </p>
 
             <div className="overview-features">

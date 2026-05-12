@@ -1,71 +1,7 @@
 import './VideoSection.css'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-
-const fallbackVideos = [
-  {
-    id: 'vannas-lat',
-    type: 'local',
-    src: '/Vannas LAT.mp4',
-    previewTime: 1.4,
-    title: 'Pilns process no A-Z',
-    desc: 'Pilns darba process no sākuma līdz gatavam rezultātam.',
-  },
-  {
-    id: 'small-vid',
-    type: 'local',
-    src: '/small vid.mp4',
-    previewTime: 0.8,
-    title: 'Kā mazā vanna ielien dzīvnieks',
-    desc: 'Praktisks piemērs, kā mazā vanna tiek izmantota medījuma ievietošanai un transportēšanai.',
-  },
-  {
-    id: '9uT6r90BZwY',
-    type: 'youtube',
-    title: 'Ragavas darbībā',
-    desc: 'Reāls piemērs, kā ragavas uzvedas praktiskā lietošanā dabā.',
-  },
-  {
-    id: 'izPM9_FGDE0',
-    type: 'youtube',
-    title: 'Lietošana bezceļā',
-    desc: 'Skats uz ragavu lietošanu sarežģītākos apstākļos un reljefā.',
-  },
-  {
-    id: 'dp_ivalzEe8',
-    type: 'youtube',
-    title: 'Pārvietošana un vilkšana',
-    desc: 'Kā ragavas tiek vilktas un izmantotas ikdienas darbā.',
-  },
-  {
-    id: 'CKOWTuo_WJg',
-    type: 'youtube',
-    title: 'Kravnesība praksē',
-    desc: 'Praktisks ieskats ragavu ietilpībā un to izmantošanā smagākām kravām.',
-  },
-  {
-    id: 'v2EYZRFkakw',
-    type: 'youtube',
-    title: 'Darbs meža apstākļos',
-    desc: 'Ragavu pielietojums mežā, starp kokiem, celmiem un nelīdzenā segumā.',
-  },
-  {
-    id: 't8JmTwOfBss',
-    type: 'youtube',
-    title: 'Izturība un pielietojums',
-    desc: 'Vēl viens piemērs, kas parāda ragavu izturību un praktisko vērtību.',
-  },
-  {
-    id: 'KEZ34NNd6dY',
-    type: 'youtube',
-    title: 'Papildu demonstrācija',
-    desc: 'Vēl viens reāls demonstrācijas video par ragavu lietošanu praksē.',
-  },
-]
-
-function textFallback(item, field, fallback = '') {
-  return item[`${field}_lv`] || item[`${field}_en`] || item[`${field}_ru`] || item[`${field}_lt`] || item[`${field}_est`] || fallback
-}
+import { pickLocalizedField, useLocale } from '../lib/publicI18n.jsx'
 
 function getYouTubeId(videoUrl) {
   if (!videoUrl) return null
@@ -92,7 +28,7 @@ function getYouTubeId(videoUrl) {
   return null
 }
 
-function mapCmsVideos(items) {
+function mapCmsVideos(items, locale, videoText) {
   return items.map((item) => {
     const youtubeId = getYouTubeId(item.video_url)
 
@@ -102,8 +38,8 @@ function mapCmsVideos(items) {
       videoId: youtubeId,
       src: item.video_url,
       thumbnailUrl: item.thumbnail_url,
-      title: textFallback(item, 'title', 'Video'),
-      desc: textFallback(item, 'description', ''),
+      title: pickLocalizedField(item, 'title', locale, videoText.fallbackTitle),
+      desc: pickLocalizedField(item, 'description', locale, ''),
     }
   })
 }
@@ -152,12 +88,18 @@ function LocalVideoThumbnail({ src, previewTime = 0.1 }) {
 }
 
 export default function VideoSection() {
-  const [videos, setVideos] = useState(fallbackVideos)
+  const { text, locale } = useLocale()
+  const videoText = text.videos
+  const [cmsVideos, setCmsVideos] = useState([])
   const [activeIdx, setActiveIdx] = useState(0)
   const [canScrollDown, setCanScrollDown] = useState(false)
   const playlistRef = useRef(null)
   const playerRef = useRef(null)
-  const active = videos[activeIdx]
+  const videos = useMemo(
+    () => (cmsVideos.length ? mapCmsVideos(cmsVideos, locale, videoText) : videoText.fallbackVideos),
+    [cmsVideos, locale, videoText],
+  )
+  const active = videos[activeIdx] ?? videos[0]
 
   useEffect(() => {
     let mounted = true
@@ -166,7 +108,7 @@ export default function VideoSection() {
       .then(({ getActiveVideos }) => getActiveVideos())
       .then((items) => {
         if (!mounted || items.length === 0) return
-        setVideos(mapCmsVideos(items))
+        setCmsVideos(items)
         setActiveIdx(0)
       })
       .catch(() => {})
@@ -175,6 +117,10 @@ export default function VideoSection() {
       mounted = false
     }
   }, [])
+
+  useEffect(() => {
+    if (activeIdx >= videos.length) setActiveIdx(0)
+  }, [activeIdx, videos.length])
 
   useEffect(() => {
     const playlist = playlistRef.current
@@ -229,10 +175,10 @@ export default function VideoSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.65 }}
         >
-          <span className="section-label">Videoklipi</span>
-          <h2 className="section-title">Skaties ragavas darbībā</h2>
+          <span className="section-label">{videoText.label}</span>
+          <h2 className="section-title">{videoText.title}</h2>
           <p className="section-subtitle">
-            Reāli video no lauka — kā Canada apvidus ragavas darbojas skarbajos apstākļos.
+            {videoText.subtitle}
           </p>
         </motion.div>
 
@@ -267,7 +213,7 @@ export default function VideoSection() {
               )}
             </div>
             <div className="video-active-info">
-              <span className="video-active-label">Aktīvais video</span>
+              <span className="video-active-label">{videoText.activeVideo}</span>
               <h3>{active.title}</h3>
               <p>{active.desc}</p>
             </div>
@@ -281,8 +227,8 @@ export default function VideoSection() {
             transition={{ duration: 0.55 }}
           >
             <div className="video-playlist-head">
-              <span className="video-playlist-label">Atskaņošanas saraksts</span>
-              <span className="video-playlist-count">{videos.length} video</span>
+              <span className="video-playlist-label">{videoText.playlist}</span>
+              <span className="video-playlist-count">{videoText.videoCount(videos.length)}</span>
             </div>
 
             <div className="video-playlist" ref={playlistRef}>
@@ -337,9 +283,9 @@ export default function VideoSection() {
               type="button"
               className={`video-playlist-cue${canScrollDown ? '' : ' video-playlist-cue--hidden'}`}
               onClick={handlePlaylistCueClick}
-              aria-label="Rādīt vēl videoklipus"
+              aria-label={videoText.showMoreAria}
             >
-              <span>Vairāk video zemāk</span>
+              <span>{videoText.showMore}</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M6 9l6 6 6-6"

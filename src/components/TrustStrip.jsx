@@ -1,5 +1,6 @@
 import './TrustStrip.css'
 import { motion } from 'framer-motion'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 const items = [
   {
@@ -9,8 +10,6 @@ const items = [
           stroke="var(--gold)" strokeWidth="1.8" strokeLinejoin="round"/>
       </svg>
     ),
-    label: 'Officiālais izplatītājs',
-    sub: 'Baltijā',
   },
   {
     icon: (
@@ -21,8 +20,6 @@ const items = [
         <circle cx="18.5" cy="18.5" r="2.5" stroke="var(--gold)" strokeWidth="1.8"/>
       </svg>
     ),
-    label: 'Piegāde',
-    sub: 'Latvija · Lietuva · Igaunija',
   },
   {
     icon: (
@@ -31,8 +28,6 @@ const items = [
           stroke="var(--gold)" strokeWidth="1.8" strokeLinejoin="round"/>
       </svg>
     ),
-    label: 'Ražots Zviedrijā',
-    sub: 'HD polietilēns · Izturīgs · Elastīgs',
   },
   {
     icon: (
@@ -41,8 +36,6 @@ const items = [
           stroke="var(--gold)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
-    label: 'Tālrunis',
-    sub: '+371 29206554',
   },
   {
     icon: (
@@ -52,12 +45,12 @@ const items = [
         <path d="M22 6l-10 7L2 6" stroke="var(--gold)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
-    label: 'E-pasts',
-    sub: 'info@canadasleigh.com',
   },
 ]
 
 export default function TrustStrip() {
+  const { text } = useLocale()
+
   return (
     <div className="trust-strip">
       <div className="trust-inner">
@@ -72,8 +65,8 @@ export default function TrustStrip() {
           >
             <div className="trust-icon">{item.icon}</div>
             <div className="trust-text">
-              <span className="trust-label">{item.label}</span>
-              <span className="trust-sub">{item.sub}</span>
+              <span className="trust-label">{text.trustStrip[i].label}</span>
+              <span className="trust-sub">{text.trustStrip[i].sub}</span>
             </div>
           </motion.div>
         ))}

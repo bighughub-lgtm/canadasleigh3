@@ -1,26 +1,11 @@
 import './Header.css'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const LANGS = ['LAT', 'ENG', 'RUS']
-const ACTIVE_LANG = 'LAT'
-
-const navLabels = {
-  LAT: { partners: 'Partneriem' },
-  ENG: { partners: 'Partners' },
-  RUS: { partners: 'Партнёрам' },
-}
-
-const navLinks = [
-  { label: 'Modeļi', href: '/#produkti' },
-  { label: 'Galerija', href: '/#galerija' },
-  { label: 'Videoklipi', href: '/#video' },
-  { label: 'Par mums', href: '/#par-mums' },
-  { label: navLabels[ACTIVE_LANG].partners, href: '/#partners' },
-  { label: 'Kontakti', href: '/#kontakti' },
-]
+import { useLocale } from '../lib/publicI18n.jsx'
 
 export default function Header() {
+  const { text, locale, setLocale, localeOptions, activeLocaleLabel } = useLocale()
+  const navLinks = text.header.nav
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [langMenuOpen, setLangMenuOpen] = useState(false)
@@ -57,6 +42,12 @@ export default function Header() {
     setMenuOpen((open) => !open)
   }
 
+  const handleLocaleSelect = (nextLocale, closeMobileMenu = false) => {
+    setLocale(nextLocale)
+    setLangMenuOpen(false)
+    if (closeMobileMenu) setMenuOpen(false)
+  }
+
   useEffect(() => {
     const handlePointerDown = (event) => {
       if (!langMenuRef.current?.contains(event.target)) {
@@ -90,7 +81,7 @@ export default function Header() {
 
           <nav className="header-nav">
             {navLinks.map(l => (
-              <a key={l.label} href={l.href} className="header-nav-link">{l.label}</a>
+              <a key={l.href} href={l.href} className="header-nav-link">{l.label}</a>
             ))}
           </nav>
 
@@ -102,9 +93,9 @@ export default function Header() {
                 onClick={() => setLangMenuOpen((open) => !open)}
                 aria-expanded={langMenuOpen}
                 aria-haspopup="menu"
-                aria-label="Valodas izvēlne"
+                aria-label={text.header.languageMenu}
               >
-                <span>{ACTIVE_LANG}</span>
+                <span>{activeLocaleLabel}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M6 9l6 6 6-6"
@@ -125,15 +116,14 @@ export default function Header() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.18 }}
                   >
-                    {LANGS.map((lang) => (
+                    {localeOptions.map((option) => (
                       <button
-                        key={lang}
+                        key={option.locale}
                         type="button"
-                        className={`lang-option${lang === ACTIVE_LANG ? ' lang-option--active' : ''}`}
-                        title={lang !== ACTIVE_LANG ? 'Drīzumā pieejams' : undefined}
-                        onClick={() => setLangMenuOpen(false)}
+                        className={`lang-option${option.locale === locale ? ' lang-option--active' : ''}`}
+                        onClick={() => handleLocaleSelect(option.locale)}
                       >
-                        {lang}
+                        {option.label}
                       </button>
                     ))}
                   </motion.div>
@@ -157,7 +147,7 @@ export default function Header() {
             <button
               className={`burger${menuOpen ? ' burger--open' : ''}`}
               onClick={toggleMenu}
-              aria-label={menuOpen ? 'Aizvērt izvēlni' : 'Atvērt izvēlni'}
+              aria-label={menuOpen ? text.header.closeMenu : text.header.openMenu}
               aria-expanded={menuOpen}
             >
               <span /><span /><span />
@@ -175,7 +165,7 @@ export default function Header() {
             exit={{ y: '-100%', transition: { duration: 0.3, ease: [0.76, 0, 0.24, 1] } }}
             role="dialog"
             aria-modal="true"
-            aria-label="Navigācijas izvēlne"
+            aria-label={text.header.navigationMenu}
           >
             <div className="mm-top">
               <a href="/" className="mm-logo" onClick={closeMenu}>
@@ -184,7 +174,7 @@ export default function Header() {
               <button
                 className="mm-close"
                 onClick={closeMenu}
-                aria-label="Aizvērt izvēlni"
+                aria-label={text.header.closeMenu}
               >
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
                   <path
@@ -199,10 +189,10 @@ export default function Header() {
 
             <div className="mm-rule" aria-hidden="true" />
 
-            <nav className="mm-nav" aria-label="Galvenā navigācija">
+            <nav className="mm-nav" aria-label={text.header.mainNavigation}>
               {navLinks.map((l, i) => (
                 <motion.a
-                  key={l.label}
+                  key={l.href}
                   href={l.href}
                   className="mm-link"
                   onClick={closeMenu}
@@ -221,16 +211,15 @@ export default function Header() {
             </nav>
 
             <div className="mm-bottom">
-              <div className="mm-langs" role="group" aria-label="Valodas izvēle">
-                {LANGS.map(l => (
+              <div className="mm-langs" role="group" aria-label={text.header.mobileLanguageGroup}>
+                {localeOptions.map((option) => (
                   <button
-                    key={l}
+                    key={option.locale}
                     type="button"
-                    className={`mm-lang${l === ACTIVE_LANG ? ' mm-lang--active' : ''}`}
-                    title={l !== ACTIVE_LANG ? 'Drīzumā pieejams' : undefined}
-                    disabled={l !== ACTIVE_LANG}
+                    className={`mm-lang${option.locale === locale ? ' mm-lang--active' : ''}`}
+                    onClick={() => handleLocaleSelect(option.locale, true)}
                   >
-                    {l}
+                    {option.label}
                   </button>
                 ))}
               </div>

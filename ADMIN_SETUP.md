@@ -50,7 +50,7 @@ Replace `client@example.com` with the actual admin email.
 
 `supabase/admin_cms_schema.sql` creates the CMS tables, indexes, triggers, and security policies. `supabase/admin_cms_seed_existing_content.sql` imports the current existing website gallery images, product detail gallery images, product overview images, video list, and landing section image slots into the admin panel.
 
-After pulling or deploying updates to this media model, run `supabase/admin_cms_seed_existing_content.sql` again. The seed is safe to rerun and adds missing rows without duplicating existing gallery URLs or single image slots. This update adds the explicit product overview slots listed below.
+After pulling or deploying updates to this media model, run `supabase/admin_cms_seed_existing_content.sql` again. The seed is safe to rerun and adds missing rows without duplicating existing gallery URLs or single image slots. It also fills missing EN/RU public media titles, alt text, and video descriptions for seeded rows without overwriting existing non-empty translations. This update adds the explicit product overview slots listed below.
 
 If the seed file is not run, the public website still works because it keeps the hardcoded fallback content, but the admin panel will look empty until media is imported or uploaded.
 

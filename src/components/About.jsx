@@ -1,9 +1,12 @@
 import './About.css'
 import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 export default function About() {
-  const aboutImage = useImageSlot('about', '/KRJ02427.jpg', 'Canada Pulkan Baltijā')
+  const { text } = useLocale()
+  const about = text.about
+  const aboutImage = useImageSlot('about', '/KRJ02427.jpg', about.imageAlt)
 
   return (
     <section className="section about" id="par-mums">
@@ -31,7 +34,7 @@ export default function About() {
                 loading="lazy"
                 decoding="async"
               />
-              <span>Oficiālais pārstāvis Baltijā</span>
+              <span>{about.badge}</span>
             </div>
           </motion.div>
 
@@ -42,30 +45,21 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span className="section-label">Par mums</span>
+            <span className="section-label">{about.label}</span>
             <h2 className="section-title">
-              VS Home SIA —<br />officiālais izplatītājs
+              {about.titleLine1}<br />{about.titleLine2}
             </h2>
-            <p className="about-para">
-              VS Home SIA ir Canada apvidus ragavu oficiālais pārstāvis un izplatītājs Latvijā, Lietuvā un Igaunijā. Mēs nodrošinām Baltijas medniekiem, makšķerniekiem un saimniecībām piekļuvi Zviedrijā ražotām, gadiem testētām ragavām.
-            </p>
-            <p className="about-para">
-              Canada apvidus ragavas ir ražotas Zviedrijā un pārbaudītas Skandināvijas kalnainajos un akmeņainajos apvidos. HD polietilēna materiāls un raqavu īpašs dizains nodrošina izturību un elastību praktiski jebkuros apvidus apstākļos.
-            </p>
+            {about.paragraphs.map((paragraph) => (
+              <p key={paragraph} className="about-para">{paragraph}</p>
+            ))}
 
             <div className="about-stats">
-              <div className="about-stat">
-                <span className="about-stat-num">3</span>
-                <span className="about-stat-label">Baltijas valstis</span>
-              </div>
-              <div className="about-stat">
-                <span className="about-stat-num">3</span>
-                <span className="about-stat-label">Modeļi izvēlei</span>
-              </div>
-              <div className="about-stat">
-                <span className="about-stat-num">5 kg</span>
-                <span className="about-stat-label">No minimālā svara</span>
-              </div>
+              {about.stats.map((stat) => (
+                <div key={stat.label} className="about-stat">
+                  <span className="about-stat-num">{stat.num}</span>
+                  <span className="about-stat-label">{stat.label}</span>
+                </div>
+              ))}
             </div>
 
             <div className="about-contacts">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './CookieBanner.css'
+import { useLocale } from '../lib/publicI18n.jsx'
 
 const STORAGE_KEY = 'canadasleigh_cookie_consent'
 
@@ -17,6 +18,8 @@ function saveConsent(prefs) {
 }
 
 export default function CookieBanner() {
+  const { text } = useLocale()
+  const cookieText = text.cookies
   const [visible, setVisible] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [analytics, setAnalytics] = useState(false)
@@ -78,10 +81,10 @@ export default function CookieBanner() {
 
       {/* Settings modal */}
       {settingsOpen && (
-        <div className="cookie-modal" role="dialog" aria-modal="true" aria-label="Sīkdatņu iestatījumi">
+        <div className="cookie-modal" role="dialog" aria-modal="true" aria-label={cookieText.settingsLabel}>
           <div className="cookie-modal-header">
-            <h2>Sīkdatņu iestatījumi</h2>
-            <button className="cookie-modal-close" onClick={() => setSettingsOpen(false)} aria-label="Aizvērt">
+            <h2>{cookieText.settingsLabel}</h2>
+            <button className="cookie-modal-close" onClick={() => setSettingsOpen(false)} aria-label={cookieText.close}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2"
                   strokeLinecap="round" strokeLinejoin="round" />
@@ -91,19 +94,18 @@ export default function CookieBanner() {
 
           <div className="cookie-modal-body">
             <p className="cookie-modal-intro">
-              Mēs izmantojam sīkdatnes, lai nodrošinātu mājaslapas darbību un uzlabotu jūsu pieredzi.
-              Varat izvēlēties, kuras sīkdatnes atļaut. Sīkāk: <Link to="/sikdatnu-politika" onClick={() => setSettingsOpen(false)}>Sīkdatņu politika</Link>.
+              {cookieText.intro} <Link to="/sikdatnu-politika" onClick={() => setSettingsOpen(false)}>{cookieText.policyLink}</Link>.
             </p>
 
             <div className="cookie-option">
               <div className="cookie-option-info">
                 <div className="cookie-option-header">
-                  <span className="cookie-option-name">Nepieciešamās sīkdatnes</span>
-                  <span className="cookie-tag cookie-tag--required">Vienmēr ieslēgtas</span>
+                  <span className="cookie-option-name">{cookieText.options.necessary.name}</span>
+                  <span className="cookie-tag cookie-tag--required">{cookieText.required}</span>
                 </div>
-                <p>Nodrošina mājaslapas tehnisko darbību — sesiju pārvaldību un sīkdatņu izvēles saglabāšanu. Nevar tikt atslēgtas.</p>
+                <p>{cookieText.options.necessary.desc}</p>
               </div>
-              <div className="cookie-toggle cookie-toggle--disabled" aria-label="Nepieciešamās sīkdatnes (obligātas)">
+              <div className="cookie-toggle cookie-toggle--disabled" aria-label={cookieText.options.necessary.aria}>
                 <div className="cookie-toggle-track cookie-toggle-track--on">
                   <div className="cookie-toggle-thumb" />
                 </div>
@@ -113,16 +115,16 @@ export default function CookieBanner() {
             <div className="cookie-option">
               <div className="cookie-option-info">
                 <div className="cookie-option-header">
-                  <span className="cookie-option-name">Analītiskās sīkdatnes</span>
-                  <span className="cookie-tag cookie-tag--optional">Pēc izvēles</span>
+                  <span className="cookie-option-name">{cookieText.options.analytics.name}</span>
+                  <span className="cookie-tag cookie-tag--optional">{cookieText.optional}</span>
                 </div>
-                <p>Palīdz mums saprast, kā apmeklētāji lieto mājaslapu (Google Analytics u.tml.). Dati tiek apkopoti anonimizēti.</p>
+                <p>{cookieText.options.analytics.desc}</p>
               </div>
               <button
                 className="cookie-toggle"
                 role="switch"
                 aria-checked={analytics}
-                aria-label="Analītiskās sīkdatnes"
+                aria-label={cookieText.options.analytics.name}
                 onClick={() => setAnalytics(v => !v)}
               >
                 <div className={`cookie-toggle-track${analytics ? ' cookie-toggle-track--on' : ''}`}>
@@ -134,16 +136,16 @@ export default function CookieBanner() {
             <div className="cookie-option">
               <div className="cookie-option-info">
                 <div className="cookie-option-header">
-                  <span className="cookie-option-name">Mārketinga sīkdatnes</span>
-                  <span className="cookie-tag cookie-tag--optional">Pēc izvēles</span>
+                  <span className="cookie-option-name">{cookieText.options.marketing.name}</span>
+                  <span className="cookie-tag cookie-tag--optional">{cookieText.optional}</span>
                 </div>
-                <p>Ļauj rādīt jums atbilstošus reklāmas piedāvājumus (Meta Pixel / Facebook sīkdatnes). Tiek aktivizētas tikai ar jūsu piekrišanu.</p>
+                <p>{cookieText.options.marketing.desc}</p>
               </div>
               <button
                 className="cookie-toggle"
                 role="switch"
                 aria-checked={marketing}
-                aria-label="Mārketinga sīkdatnes"
+                aria-label={cookieText.options.marketing.name}
                 onClick={() => setMarketing(v => !v)}
               >
                 <div className={`cookie-toggle-track${marketing ? ' cookie-toggle-track--on' : ''}`}>
@@ -155,13 +157,13 @@ export default function CookieBanner() {
 
           <div className="cookie-modal-footer">
             <button className="cookie-btn cookie-btn--outline" onClick={acceptEssential}>
-              Tikai nepieciešamās
+              {cookieText.buttons.essential}
             </button>
             <button className="cookie-btn cookie-btn--secondary" onClick={saveSettings}>
-              Saglabāt izvēli
+              {cookieText.buttons.save}
             </button>
             <button className="cookie-btn cookie-btn--primary" onClick={acceptAll}>
-              Akceptēt visas
+              {cookieText.buttons.acceptAll}
             </button>
           </div>
         </div>
@@ -169,25 +171,24 @@ export default function CookieBanner() {
 
       {/* Banner (first visit) */}
       {visible && !settingsOpen && (
-        <div className="cookie-banner" role="region" aria-label="Sīkdatņu paziņojums">
+        <div className="cookie-banner" role="region" aria-label={cookieText.bannerAria}>
           <div className="cookie-banner-content">
             <div className="cookie-banner-text">
-              <strong>Mēs izmantojam sīkdatnes</strong>
+              <strong>{cookieText.bannerTitle}</strong>
               <p>
-                Šī mājasapa izmanto sīkdatnes mājaslapas darbībai, analītikai un mārketingam (Meta Pixel).
-                Mārketinga un analītiskās sīkdatnes tiek aktivizētas tikai ar jūsu piekrišanu.{' '}
-                <Link to="/sikdatnu-politika">Uzzināt vairāk</Link>
+                {cookieText.bannerText}{' '}
+                <Link to="/sikdatnu-politika">{cookieText.learnMore}</Link>
               </p>
             </div>
             <div className="cookie-banner-actions">
               <button className="cookie-btn cookie-btn--outline" onClick={acceptEssential}>
-                Tikai nepieciešamās
+                {cookieText.buttons.essential}
               </button>
               <button className="cookie-btn cookie-btn--ghost" onClick={() => { setSettingsOpen(true); setVisible(false) }}>
-                Pielāgot
+                {cookieText.buttons.customize}
               </button>
               <button className="cookie-btn cookie-btn--primary" onClick={acceptAll}>
-                Akceptēt visas
+                {cookieText.buttons.acceptAll}
               </button>
             </div>
           </div>
