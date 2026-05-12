@@ -1,5 +1,6 @@
 import './Contact.css'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 const contactCards = [
   {
@@ -50,6 +51,8 @@ const contactCards = [
 ]
 
 export default function Contact() {
+  const contactImage = useImageSlot('contact', '/KRJ02364.jpg', 'Canada Pulkan apvidus ragavas')
+
   return (
     <section className="section contact" id="kontakti">
       <div className="container">
@@ -108,8 +111,8 @@ export default function Contact() {
             transition={{ duration: 0.7 }}
           >
             <img
-              src="/KRJ02364.jpg"
-              alt="Canada Pulkan apvidus ragavas"
+              src={contactImage.src}
+              alt={contactImage.alt}
               loading="lazy"
               decoding="async"
             />

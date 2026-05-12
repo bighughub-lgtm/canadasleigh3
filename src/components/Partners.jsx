@@ -1,6 +1,6 @@
 import './Partners.css'
-import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 const ACTIVE_LANG = 'LAT'
 
@@ -238,11 +238,6 @@ const partnerContent = {
 
 const content = partnerContent[ACTIVE_LANG]
 
-function mediaAlt(item, fallback) {
-  if (!item) return fallback
-  return item.alt_lv || item.alt_en || item.alt_ru || item.alt_lt || item.alt_est || fallback
-}
-
 function PartnerCard({ card, index }) {
   return (
     <motion.article
@@ -268,24 +263,7 @@ function PartnerCard({ card, index }) {
 }
 
 export default function Partners() {
-  const [sectionImage, setSectionImage] = useState(null)
-  const imageSrc = sectionImage?.url || '/PARTNERISSS.jpg'
-  const imageAlt = mediaAlt(sectionImage, content.imageAlt)
-
-  useEffect(() => {
-    let mounted = true
-
-    import('../lib/cmsApi')
-      .then(({ getSectionImage }) => getSectionImage('partners'))
-      .then((image) => {
-        if (mounted && image?.url) setSectionImage(image)
-      })
-      .catch(() => {})
-
-    return () => {
-      mounted = false
-    }
-  }, [])
+  const partnersImage = useImageSlot('partners', '/PARTNERISSS.jpg', content.imageAlt)
 
   return (
     <section className="section partners" id="partners">
@@ -351,8 +329,8 @@ export default function Partners() {
               transition={{ duration: 0.65, delay: 0.08 }}
             >
               <img
-                src={imageSrc}
-                alt={imageAlt}
+                src={partnersImage.src}
+                alt={partnersImage.alt}
                 loading="lazy"
                 decoding="async"
               />

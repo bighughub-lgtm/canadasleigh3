@@ -2,13 +2,11 @@ import './Header.css'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const LANGS = ['LAT', 'LIT', 'EST', 'ENG', 'RUS']
+const LANGS = ['LAT', 'ENG', 'RUS']
 const ACTIVE_LANG = 'LAT'
 
 const navLabels = {
   LAT: { partners: 'Partneriem' },
-  LIT: { partners: 'Partneriams' },
-  EST: { partners: 'Partneritele' },
   ENG: { partners: 'Partners' },
   RUS: { partners: 'Партнёрам' },
 }

@@ -1,22 +1,59 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { isCurrentUserAdmin } from '../lib/cmsApi'
 import { supabase, supabaseConfigured, getSupabaseConfigError } from '../lib/supabaseClient'
 import './admin.css'
 
-export default function AdminLogin() {
+export default function AdminLogin({ onAuthenticated }) {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [checkingSession, setCheckingSession] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!supabase) return
+    let active = true
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate('/admin', { replace: true })
-    })
-  }, [navigate])
+    async function checkExistingSession() {
+      if (!supabaseConfigured || !supabase) {
+        setCheckingSession(false)
+        return
+      }
+
+      const { data } = await supabase.auth.getSession()
+      const sessionUser = data.session?.user
+
+      if (!active) return
+
+      if (!sessionUser) {
+        setCheckingSession(false)
+        return
+      }
+
+      const allowed = await isCurrentUserAdmin(sessionUser.id)
+
+      if (!active) return
+
+      if (!allowed) {
+        setError('Nav piekļuves šim admin panelim.')
+        setCheckingSession(false)
+        return
+      }
+
+      if (onAuthenticated) {
+        onAuthenticated(sessionUser)
+      } else {
+        navigate('/admin', { replace: true })
+      }
+    }
+
+    checkExistingSession()
+
+    return () => {
+      active = false
+    }
+  }, [navigate, onAuthenticated])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -28,18 +65,42 @@ export default function AdminLogin() {
     }
 
     setLoading(true)
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    setLoading(false)
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (signInError) {
-      setError('Nepareizs e-pasts vai parole.')
-      return
+      if (signInError) {
+        setError('Nepareizs e-pasts vai parole.')
+        return
+      }
+
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+      const sessionUser = userData?.user
+
+      if (userError || !sessionUser) {
+        setError('Neizdevās pārbaudīt lietotāja piekļuvi.')
+        return
+      }
+
+      const allowed = await isCurrentUserAdmin(sessionUser.id)
+
+      if (!allowed) {
+        setError('Nav piekļuves šim admin panelim.')
+        return
+      }
+
+      if (onAuthenticated) {
+        onAuthenticated(sessionUser)
+      } else {
+        navigate('/admin', { replace: true })
+      }
+    } catch (loginError) {
+      setError(loginError.message || 'Pieslēgšanās neizdevās.')
+    } finally {
+      setLoading(false)
     }
-
-    navigate('/admin', { replace: true })
   }
 
   return (
@@ -78,8 +139,8 @@ export default function AdminLogin() {
           />
         </label>
 
-        <button className="admin-primary-btn" type="submit" disabled={loading || !supabaseConfigured}>
-          {loading ? 'Pārbauda...' : 'Ienākt'}
+        <button className="admin-primary-btn" type="submit" disabled={loading || checkingSession || !supabaseConfigured}>
+          {loading || checkingSession ? 'Pārbauda...' : 'Ienākt'}
         </button>
       </form>
     </main>

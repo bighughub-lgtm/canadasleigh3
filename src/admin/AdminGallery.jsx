@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import {
   adminCreateMedia,
   adminDeleteMedia,
-  adminListMedia,
   adminUpdateMedia,
+  moveMediaItem,
+  normalizeMediaOrder,
 } from '../lib/cmsApi'
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload'
 import './admin.css'
@@ -12,8 +13,6 @@ const languages = [
   { key: 'lv', label: 'LV' },
   { key: 'en', label: 'EN' },
   { key: 'ru', label: 'RU' },
-  { key: 'lt', label: 'LT' },
-  { key: 'est', label: 'EST' },
 ]
 
 function fileTitle(file) {
@@ -25,14 +24,10 @@ function cleanMediaPayload(item) {
     title_lv: item.title_lv || null,
     title_en: item.title_en || null,
     title_ru: item.title_ru || null,
-    title_lt: item.title_lt || null,
-    title_est: item.title_est || null,
     alt_lv: item.alt_lv || null,
     alt_en: item.alt_en || null,
     alt_ru: item.alt_ru || null,
-    alt_lt: item.alt_lt || null,
-    alt_est: item.alt_est || null,
-    sort_order: Number(item.sort_order) || 0,
+    sort_order: Number(item.sort_order) || 1,
     is_active: Boolean(item.is_active),
   }
 }
@@ -50,7 +45,7 @@ export default function AdminGallery() {
     setLoading(true)
     setError('')
     try {
-      setItems(await adminListMedia('gallery'))
+      setItems(await normalizeMediaOrder('gallery'))
     } catch (loadError) {
       setError(loadError.message || 'Neizdevās ielādēt galeriju.')
     } finally {
@@ -75,7 +70,7 @@ export default function AdminGallery() {
 
     try {
       const upload = await uploadImageToCloudinary(file, { folder: 'gallery' })
-      const created = await adminCreateMedia({
+      await adminCreateMedia({
         section: 'gallery',
         title_lv: fileTitle(file),
         alt_lv: fileTitle(file),
@@ -88,7 +83,7 @@ export default function AdminGallery() {
         is_active: true,
       })
 
-      setItems((current) => [created, ...current])
+      setItems(await normalizeMediaOrder('gallery'))
       setFile(null)
       setMessage('Attēls pievienots galerijai.')
     } catch (uploadError) {
@@ -98,14 +93,48 @@ export default function AdminGallery() {
     }
   }
 
+  const handleMove = async (item, direction) => {
+    setSavingId(`${item.id}-${direction}`)
+    setMessage('')
+    setError('')
+
+    try {
+      setItems(await moveMediaItem('gallery', item.id, direction))
+      setMessage('Galerijas secība atjaunota.')
+    } catch (moveError) {
+      setError(moveError.message || 'Neizdevās mainīt attēla secību.')
+    } finally {
+      setSavingId('')
+    }
+  }
+
+  const handleToggleActive = async (item) => {
+    setSavingId(item.id)
+    setMessage('')
+    setError('')
+
+    try {
+      const updated = await adminUpdateMedia(item.id, {
+        ...cleanMediaPayload(item),
+        is_active: !item.is_active,
+      })
+      setItems((current) => current.map((entry) => (entry.id === item.id ? updated : entry)))
+      setMessage(updated.is_active ? 'Attēls aktivizēts.' : 'Attēls paslēpts.')
+    } catch (toggleError) {
+      setError(toggleError.message || 'Neizdevās mainīt attēla statusu.')
+    } finally {
+      setSavingId('')
+    }
+  }
+
   const handleSave = async (item) => {
     setSavingId(item.id)
     setMessage('')
     setError('')
 
     try {
-      const updated = await adminUpdateMedia(item.id, cleanMediaPayload(item))
-      setItems((current) => current.map((entry) => (entry.id === item.id ? updated : entry)))
+      await adminUpdateMedia(item.id, cleanMediaPayload(item))
+      setItems(await normalizeMediaOrder('gallery'))
       setMessage('Izmaiņas saglabātas.')
     } catch (saveError) {
       setError(saveError.message || 'Neizdevās saglabāt izmaiņas.')
@@ -123,7 +152,7 @@ export default function AdminGallery() {
 
     try {
       await adminDeleteMedia(item.id)
-      setItems((current) => current.filter((entry) => entry.id !== item.id))
+      setItems(await normalizeMediaOrder('gallery'))
       setMessage('Attēls izdzēsts.')
     } catch (deleteError) {
       setError(deleteError.message || 'Neizdevās dzēst attēlu.')
@@ -138,17 +167,17 @@ export default function AdminGallery() {
         <div>
           <span className="admin-kicker">Galerija</span>
           <h2>Galerijas attēli</h2>
-          <p>Attēli, kas parādās publiskajā galerijas sadaļā.</p>
+          <p>Attēli publiskajā galerijā. Secību mainiet ar pogām, nevis ar numuriem.</p>
         </div>
       </div>
 
-      <div className="admin-upload-box">
+      <div className="admin-upload-box admin-upload-box--compact">
         <label className="admin-file-field">
           <span>Pievienot jaunu attēlu</span>
           <input type="file" accept="image/*" onChange={(event) => setFile(event.target.files?.[0] || null)} />
         </label>
         <button type="button" className="admin-primary-btn" onClick={handleUpload} disabled={!file || uploading}>
-          {uploading ? 'Augšupielādē...' : 'Augšupielādēt attēlu'}
+          {uploading ? 'Augšupielādē...' : 'Augšupielādēt'}
         </button>
       </div>
 
@@ -161,76 +190,92 @@ export default function AdminGallery() {
         </div>
       )}
 
-      <div className="admin-list">
-        {items.map((item) => (
-          <article className="admin-media-row" key={item.id}>
-            <div className="admin-media-preview">
-              <img src={item.url} alt={item.alt_lv || item.title_lv || 'Galerijas attēls'} loading="lazy" />
-            </div>
+      <div className="admin-list admin-list--compact">
+        {items.map((item, index) => {
+          const busy = savingId === item.id || savingId.startsWith(`${item.id}-`)
 
-            <div className="admin-media-form">
-              <div className="admin-row-top">
-                <label className="admin-inline-check">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(item.is_active)}
-                    onChange={(event) => updateItem(item.id, { is_active: event.target.checked })}
-                  />
-                  Aktīvs
-                </label>
-                <label className="admin-sort-field">
-                  <span>Secība</span>
-                  <input
-                    type="number"
-                    value={item.sort_order ?? 0}
-                    onChange={(event) => updateItem(item.id, { sort_order: event.target.value })}
-                  />
-                </label>
+          return (
+            <article className={`admin-media-row admin-media-row--compact${item.is_active ? '' : ' admin-media-row--inactive'}`} key={item.id}>
+              <div className="admin-media-preview admin-media-preview--small">
+                <img src={item.url} alt={item.alt_lv || item.title_lv || 'Galerijas attēls'} loading="lazy" />
+                <span className="admin-order-badge">{index + 1}</span>
               </div>
 
-              <div className="admin-language-grid">
-                {languages.map((lang) => (
-                  <div className="admin-language-card" key={lang.key}>
-                    <strong>{lang.label}</strong>
-                    <label className="admin-field">
-                      <span>Nosaukums</span>
-                      <input
-                        value={item[`title_${lang.key}`] || ''}
-                        onChange={(event) => updateItem(item.id, { [`title_${lang.key}`]: event.target.value })}
-                      />
-                    </label>
-                    <label className="admin-field">
-                      <span>Alt teksts</span>
-                      <input
-                        value={item[`alt_${lang.key}`] || ''}
-                        onChange={(event) => updateItem(item.id, { [`alt_${lang.key}`]: event.target.value })}
-                      />
-                    </label>
-                  </div>
-                ))}
-              </div>
+              <div className="admin-media-form">
+                <div className="admin-row-top admin-row-top--compact">
+                  <span className={`admin-status-pill${item.is_active ? ' admin-status-pill--active' : ''}`}>
+                    {item.is_active ? 'Aktīvs' : 'Paslēpts'}
+                  </span>
+                  <button
+                    type="button"
+                    className="admin-secondary-btn"
+                    onClick={() => handleMove(item, 'up')}
+                    disabled={index === 0 || busy}
+                  >
+                    Augšup
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-secondary-btn"
+                    onClick={() => handleMove(item, 'down')}
+                    disabled={index === items.length - 1 || busy}
+                  >
+                    Lejup
+                  </button>
+                </div>
 
-              <div className="admin-row-actions">
-                <button
-                  type="button"
-                  className="admin-primary-btn"
-                  onClick={() => handleSave(item)}
-                  disabled={savingId === item.id}
-                >
-                  {savingId === item.id ? 'Saglabā...' : 'Saglabāt'}
-                </button>
-                <button
-                  type="button"
-                  className="admin-danger-btn"
-                  onClick={() => handleDelete(item)}
-                  disabled={savingId === item.id}
-                >
-                  Dzēst
-                </button>
+                <div className="admin-language-grid admin-language-grid--compact">
+                  {languages.map((lang) => (
+                    <div className="admin-language-card admin-language-card--compact" key={lang.key}>
+                      <strong>{lang.label}</strong>
+                      <label className="admin-field">
+                        <span>Nosaukums</span>
+                        <input
+                          value={item[`title_${lang.key}`] || ''}
+                          onChange={(event) => updateItem(item.id, { [`title_${lang.key}`]: event.target.value })}
+                        />
+                      </label>
+                      <label className="admin-field">
+                        <span>Alt teksts</span>
+                        <input
+                          value={item[`alt_${lang.key}`] || ''}
+                          onChange={(event) => updateItem(item.id, { [`alt_${lang.key}`]: event.target.value })}
+                        />
+                      </label>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="admin-row-actions admin-row-actions--compact">
+                  <button
+                    type="button"
+                    className="admin-secondary-btn"
+                    onClick={() => handleToggleActive(item)}
+                    disabled={busy}
+                  >
+                    {item.is_active ? 'Paslēpt' : 'Aktivizēt'}
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-primary-btn"
+                    onClick={() => handleSave(item)}
+                    disabled={busy}
+                  >
+                    {busy ? 'Saglabā...' : 'Saglabāt'}
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-danger-btn"
+                    onClick={() => handleDelete(item)}
+                    disabled={busy}
+                  >
+                    Dzēst
+                  </button>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          )
+        })}
       </div>
     </div>
   )

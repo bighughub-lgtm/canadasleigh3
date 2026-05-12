@@ -1,12 +1,14 @@
 import './Hero.css'
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 const HERO_VIDEO_SRC = '/heroooAT.mp4'
 const HERO_FALLBACK_IMAGE = '/statiska bilde.jpg'
 
 export default function Hero() {
   const videoRef = useRef(null)
+  const heroImage = useImageSlot('hero', HERO_FALLBACK_IMAGE, 'Canada apvidus ragavas sākuma skatā')
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
   const [videoFailed, setVideoFailed] = useState(false)
@@ -105,7 +107,7 @@ export default function Hero() {
       <div className="hero-media" aria-hidden="true">
         <img
           className="hero-fallback"
-          src={HERO_FALLBACK_IMAGE}
+          src={heroImage.src}
           alt=""
           loading="eager"
           fetchPriority="high"
@@ -121,7 +123,7 @@ export default function Hero() {
             loop
             playsInline
             preload="metadata"
-            poster={HERO_FALLBACK_IMAGE}
+            poster={heroImage.src}
             onCanPlay={handleVideoReady}
             onLoadedData={handleVideoReady}
             onError={handleVideoError}

@@ -1,8 +1,11 @@
 import './ApvidusFeature.css'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 /* Light-background section — dark PNG /apvidus kamanas.png looks correct here */
 export default function ApvidusFeature() {
+  const featureImage = useImageSlot('apvidus_feature', '/apvidus kamanas.png', 'Apvidus kamanas')
+
   return (
     <section className="apvidus-feature">
       <div className="apvidus-feature-inner container">
@@ -41,8 +44,8 @@ export default function ApvidusFeature() {
         >
           {/* Dark PNG renders correctly on the light cream background */}
           <img
-            src="/apvidus kamanas.png"
-            alt="Apvidus kamanas"
+            src={featureImage.src}
+            alt={featureImage.alt}
             loading="lazy"
             decoding="async"
           />

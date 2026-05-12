@@ -1,6 +1,7 @@
 import './ProductOverview.css'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 const models = [
   {
@@ -39,8 +40,21 @@ const features = [
 ]
 
 export default function ProductOverview() {
+  const overviewImage = useImageSlot('product_overview', '/mazasragavas.jpg', 'CANADA COMPACT ragavas produkta pārskatā')
+  const classicImage = useImageSlot('product_classic', '/canadaplukan.jpg', 'CANADA CLASSIC ragavas')
+  const classicOpenImage = useImageSlot('product_classic_open', '/ragavasbig.png', 'CANADA CLASSIC OPEN ragavas')
   const [activeModelId, setActiveModelId] = useState(models[0].id)
-  const activeModel = models.find((model) => model.id === activeModelId) ?? models[0]
+  const modelImages = {
+    compact: overviewImage,
+    classic: classicImage,
+    'classic-open': classicOpenImage,
+  }
+  const modelsWithImages = models.map((model) => ({
+    ...model,
+    image: modelImages[model.id]?.src || model.image,
+    alt: modelImages[model.id]?.alt || model.alt,
+  }))
+  const activeModel = modelsWithImages.find((model) => model.id === activeModelId) ?? modelsWithImages[0]
 
   const handleModelSelect = (modelId) => {
     setActiveModelId((current) => (current === modelId ? current : modelId))
@@ -77,7 +91,7 @@ export default function ProductOverview() {
               </div>
 
               <div className="overview-switcher" role="tablist" aria-label="Modeļu izvēle">
-                {models.map((model) => (
+                {modelsWithImages.map((model) => (
                   <button
                     key={model.id}
                     type="button"

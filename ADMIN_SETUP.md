@@ -1,6 +1,8 @@
 # Admin CMS Setup
 
-This admin panel is a small media CMS for gallery images, video links, and section images. It does not edit products, prices, checkout, legal pages, or text content.
+This admin panel is a small media CMS for gallery images, video links, and fixed section image slots. It does not edit products, prices, checkout, legal pages, or text content.
+
+The admin UI uses only LV, EN, and RU fields. Older LT/EST database columns can remain in Supabase, but they are not shown to the client.
 
 ## Frontend Environment
 
@@ -46,9 +48,32 @@ on conflict (user_id) do update set email = excluded.email;
 
 Replace `client@example.com` with the actual admin email.
 
-`supabase/admin_cms_schema.sql` creates the CMS tables, indexes, triggers, and security policies. `supabase/admin_cms_seed_existing_content.sql` imports the current existing website gallery images, video list, and Partners section image into the admin panel.
+`supabase/admin_cms_schema.sql` creates the CMS tables, indexes, triggers, and security policies. `supabase/admin_cms_seed_existing_content.sql` imports the current existing website gallery images, video list, and landing section image slots into the admin panel.
 
 If the seed file is not run, the public website still works because it keeps the hardcoded fallback content, but the admin panel will look empty until media is imported or uploaded.
+
+## Admin Content Model
+
+Gallery images are a many-image list. The client can upload images, hide/show them, delete them, and move them up or down. The admin panel keeps the order normalized automatically, so the client does not need to edit order numbers.
+
+Videos are editable links. YouTube URLs and local public video paths are supported. The client can update LV/EN/RU titles and descriptions, optionally add a thumbnail URL, hide/show videos, and move them up or down.
+
+Section images are fixed slots, not a gallery. Uploading to a slot replaces that slot image instead of creating several competing active images. Current slots are:
+
+```text
+hero
+benefits
+product_overview
+product_compact
+product_classic
+product_classic_open
+apvidus_feature
+about
+contact
+partners
+```
+
+The seed imports the current public images/videos into these admin tables. If a CMS row is missing or Supabase is unavailable, the public page still uses its local fallback image/video content.
 
 ## Cloudinary Setup
 
@@ -72,7 +97,12 @@ npm run dev
 
 3. Open `/admin/login`.
 4. Log in with the Supabase Auth admin user.
-5. Test gallery/video edits.
+5. Replace the Partners image in `Sadaļu bildes`.
+6. Replace the About image in `Sadaļu bildes`.
+7. Add one gallery image.
+8. Move gallery images up/down and confirm the public gallery order changes.
+9. Add one video link.
+10. Check the public page and confirm fallbacks still work when no CMS data exists.
 
 For local testing of signed image uploads, run the site through Cloudflare Pages Functions tooling or test on a Cloudflare Pages preview deployment with the server-side environment variables configured.
 

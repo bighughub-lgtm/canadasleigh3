@@ -1,6 +1,7 @@
 import './ProductCatalog.css'
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 const compactMedia = [
   {
@@ -482,8 +483,21 @@ function ExpandedProductDetails({ product, activeMediaId, onSelect }) {
 }
 
 export default function ProductCatalog() {
+  const compactImage = useImageSlot('product_compact', '/mazasragavas.jpg', 'CANADA COMPACT ragavas')
+  const classicImage = useImageSlot('product_classic', '/canadaplukan.jpg', 'CANADA CLASSIC ragavas')
+  const classicOpenImage = useImageSlot('product_classic_open', '/ragavasbig.png', 'CANADA CLASSIC OPEN ragavas')
   const [expandedProduct, setExpandedProduct] = useState(null)
   const [activeMediaByProduct, setActiveMediaByProduct] = useState(initialActiveMedia)
+  const productSlotImages = {
+    compact: compactImage,
+    classic: classicImage,
+    'classic-open': classicOpenImage,
+  }
+  const productsWithImages = products.map((product) => ({
+    ...product,
+    image: productSlotImages[product.id]?.src || product.image,
+    imageAlt: productSlotImages[product.id]?.alt || product.name,
+  }))
 
   return (
     <section className="section product-catalog" id="produkti">
@@ -504,7 +518,7 @@ export default function ProductCatalog() {
         </motion.div>
 
         <div className="catalog-grid">
-          {products.map((product, index) => {
+          {productsWithImages.map((product, index) => {
             const isExpanded = product.expandable && expandedProduct === product.id
 
             return (
@@ -523,7 +537,7 @@ export default function ProductCatalog() {
                 <div className="catalog-image">
                   <img
                     src={product.image}
-                    alt={product.name}
+                    alt={product.imageAlt}
                     loading="lazy"
                     decoding="async"
                   />

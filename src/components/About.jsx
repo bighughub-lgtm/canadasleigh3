@@ -1,7 +1,10 @@
 import './About.css'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 export default function About() {
+  const aboutImage = useImageSlot('about', '/KRJ02427.jpg', 'Canada Pulkan Baltijā')
+
   return (
     <section className="section about" id="par-mums">
       <div className="container">
@@ -15,8 +18,8 @@ export default function About() {
           >
             <div className="about-img-wrap">
               <img
-                src="/KRJ02427.jpg"
-                alt="Canada Pulkan Baltijā"
+                src={aboutImage.src}
+                alt={aboutImage.alt}
                 loading="lazy"
                 decoding="async"
               />

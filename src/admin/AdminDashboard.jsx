@@ -16,22 +16,18 @@ export default function AdminDashboard() {
   useEffect(() => {
     let active = true
 
-    async function loadSession() {
-      if (!supabaseConfigured || !supabase) {
-        setStatus('not-configured')
-        return
-      }
-
-      const { data } = await supabase.auth.getSession()
-      const sessionUser = data.session?.user
+    async function validateSession(session) {
+      const sessionUser = session?.user
 
       if (!active) return
 
       if (!sessionUser) {
+        setUser(null)
         setStatus('login')
         return
       }
 
+      setStatus('loading')
       setUser(sessionUser)
       const allowed = await isCurrentUserAdmin(sessionUser.id)
 
@@ -39,12 +35,31 @@ export default function AdminDashboard() {
       setStatus(allowed ? 'ready' : 'denied')
     }
 
-    loadSession()
+    if (!supabaseConfigured || !supabase) {
+      setStatus('not-configured')
+      return () => {
+        active = false
+      }
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      validateSession(data.session)
+    })
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      validateSession(session)
+    })
 
     return () => {
       active = false
+      authListener.subscription.unsubscribe()
     }
   }, [])
+
+  const handleAuthenticated = async (sessionUser) => {
+    setStatus('ready')
+    setUser(sessionUser)
+  }
 
   const handleSignOut = async () => {
     await supabase?.auth.signOut()
@@ -70,14 +85,14 @@ export default function AdminDashboard() {
     )
   }
 
-  if (status === 'login') return <AdminLogin />
+  if (status === 'login') return <AdminLogin onAuthenticated={handleAuthenticated} />
 
   if (status === 'denied') {
     return (
       <main className="admin-state-page">
         <div className="admin-state-card admin-state-card--wide">
           <h1>Piekļuve liegta</h1>
-          <p>Jūsu lietotājs nav pievienots admin sarakstam. Sazinieties ar vietnes administratoru.</p>
+          <p>Nav piekļuves šim admin panelim.</p>
           <button type="button" className="admin-secondary-btn" onClick={handleSignOut}>
             Iziet
           </button>

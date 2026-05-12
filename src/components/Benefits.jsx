@@ -1,5 +1,6 @@
 import './Benefits.css'
 import { motion } from 'framer-motion'
+import { useImageSlot } from '../lib/useImageSlot'
 
 const benefits = [
   'Neplaisā atsitoties pret akmeņiem un var izturēt auto pārbraukšanu pāri tām',
@@ -11,6 +12,8 @@ const benefits = [
 ]
 
 export default function Benefits() {
+  const benefitsImage = useImageSlot('benefits', '/KRJ01720.jpg', 'Canada Pulkan apvidus ragavas lietošanā')
+
   return (
     <section className="section benefits" id="priekšrocības">
       <div className="container">
@@ -57,8 +60,8 @@ export default function Benefits() {
             transition={{ duration: 0.7 }}
           >
             <img
-              src="/KRJ01720.jpg"
-              alt="Canada Pulkan apvidus ragavas lietošanā"
+              src={benefitsImage.src}
+              alt={benefitsImage.alt}
               loading="lazy"
               decoding="async"
             />
