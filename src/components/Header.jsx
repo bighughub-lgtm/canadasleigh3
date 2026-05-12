@@ -5,11 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 const LANGS = ['LAT', 'LIT', 'EST', 'ENG', 'RUS']
 const ACTIVE_LANG = 'LAT'
 
+const navLabels = {
+  LAT: { partners: 'Partneriem' },
+  LIT: { partners: 'Partneriams' },
+  EST: { partners: 'Partneritele' },
+  ENG: { partners: 'Partners' },
+  RUS: { partners: 'Партнёрам' },
+}
+
 const navLinks = [
   { label: 'Modeļi', href: '/#produkti' },
   { label: 'Galerija', href: '/#galerija' },
   { label: 'Videoklipi', href: '/#video' },
   { label: 'Par mums', href: '/#par-mums' },
+  { label: navLabels[ACTIVE_LANG].partners, href: '/#partners' },
   { label: 'Kontakti', href: '/#kontakti' },
 ]
 

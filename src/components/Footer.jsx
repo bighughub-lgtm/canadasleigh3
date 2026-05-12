@@ -3,6 +3,15 @@ import './Footer.css'
 
 export default function Footer() {
   const year = new Date().getFullYear()
+  const activeLang = 'LAT'
+
+  const footerLabels = {
+    LAT: { partnership: 'Sadarbība' },
+    LIT: { partnership: 'Bendradarbiavimas' },
+    EST: { partnership: 'Koostöö' },
+    ENG: { partnership: 'Partnership' },
+    RUS: { partnership: 'Сотрудничество' },
+  }
 
   const openCookieSettings = () => {
     window.dispatchEvent(new CustomEvent('open-cookie-settings'))
@@ -43,6 +52,7 @@ export default function Footer() {
               <a href="/#priekšrocības">Priekšrocības</a>
               <a href="/#galerija">Galerija</a>
               <a href="/#video">Videoklipi</a>
+              <a href="/#partners">{footerLabels[activeLang].partnership}</a>
             </div>
             <div className="footer-col">
               <h4>Pakalpojumi</h4>

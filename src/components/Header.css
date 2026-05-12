@@ -39,7 +39,7 @@
   align-items: center;
   justify-content: center;
   justify-self: center;
-  gap: 24px;
+  gap: 22px;
 }
 
 .header-nav-link {
@@ -472,7 +472,7 @@
   }
 
   .header-nav {
-    gap: 18px;
+    gap: 16px;
   }
 
   .header-right {
