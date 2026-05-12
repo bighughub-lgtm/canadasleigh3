@@ -156,6 +156,10 @@ export async function adminListMedia(section) {
   return safeArray(data)
 }
 
+export async function adminListMediaBySection(section) {
+  return adminListMedia(section)
+}
+
 export async function normalizeMediaOrder(section) {
   const client = ensureClient()
   const normalized = normalizeOrderLocally(await adminListMedia(section))
@@ -200,6 +204,10 @@ export async function moveMediaItem(section, id, direction) {
   return updates
 }
 
+export async function adminMoveMediaItem(section, id, direction) {
+  return moveMediaItem(section, id, direction)
+}
+
 export async function adminCreateMedia(payload) {
   const client = ensureClient()
   const { data, error } = await client
@@ -210,6 +218,21 @@ export async function adminCreateMedia(payload) {
 
   if (error) throw error
   return data
+}
+
+export async function adminAddGalleryImage(section, imageData) {
+  const normalized = normalizeOrderLocally(await adminListMedia(section))
+  const nextOrder = normalized.length + 1
+
+  const saved = await adminCreateMedia({
+    ...imageData,
+    section,
+    sort_order: nextOrder,
+    is_active: imageData.is_active ?? true,
+  })
+
+  await normalizeMediaOrder(section)
+  return saved
 }
 
 export async function adminUpdateMedia(id, payload) {
@@ -229,6 +252,41 @@ export async function adminDeleteMedia(id) {
   const client = ensureClient()
   const { error } = await client.from('site_media').delete().eq('id', id)
   if (error) throw error
+}
+
+export async function deactivateDuplicateActiveSlotRows(slotId) {
+  const client = ensureClient()
+  const existingRows = await adminListMedia(slotId)
+  const ranked = existingRows
+    .slice()
+    .sort((a, b) => {
+      if (Boolean(a.is_active) !== Boolean(b.is_active)) return Boolean(b.is_active) - Boolean(a.is_active)
+      return byOrderThenCreated(a, b)
+    })
+
+  const [primary, ...duplicates] = ranked
+
+  if (!primary) return null
+
+  const { data, error } = await client
+    .from('site_media')
+    .update({ is_active: true, sort_order: 1 })
+    .eq('id', primary.id)
+    .select(MEDIA_COLUMNS)
+    .single()
+
+  if (error) throw error
+
+  if (duplicates.length > 0) {
+    const { error: duplicateError } = await client
+      .from('site_media')
+      .update({ is_active: false, sort_order: 2 })
+      .in('id', duplicates.map((item) => item.id))
+
+    if (duplicateError) throw duplicateError
+  }
+
+  return data
 }
 
 export async function adminUpsertSectionImage(slotId, imageData) {

@@ -5,7 +5,7 @@ import {
   adminUpsertSectionImage,
 } from '../lib/cmsApi'
 import { uploadImageToCloudinary } from '../lib/cloudinaryUpload'
-import { editableImageSlotIds, editableImageSlots } from '../lib/mediaSlots'
+import { editableImageSlotIds, editableImageSlots, mediaSlotGroups } from '../lib/mediaSlots'
 import './admin.css'
 
 const languages = [
@@ -38,6 +38,8 @@ function slotAltValue(item, slot, lang) {
   return item[`alt_${lang}`] || ''
 }
 
+const singleSlotGroups = mediaSlotGroups.filter((group) => group.type === 'single')
+
 export default function AdminSectionImages() {
   const [slotItems, setSlotItems] = useState({})
   const [loading, setLoading] = useState(true)
@@ -45,6 +47,7 @@ export default function AdminSectionImages() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [slotStatus, setSlotStatus] = useState({})
+  const [dirtySlots, setDirtySlots] = useState({})
 
   const loadItems = async () => {
     setLoading(true)
@@ -68,6 +71,7 @@ export default function AdminSectionImages() {
   }
 
   const updateSlotAlt = (slotId, lang, value) => {
+    setDirtySlots((current) => ({ ...current, [slotId]: true }))
     setSlotItems((current) => {
       const currentItem = current[slotId] || {}
       return {
@@ -105,6 +109,7 @@ export default function AdminSectionImages() {
       })
 
       setSlotItems((current) => ({ ...current, [slot.id]: saved }))
+      setDirtySlots((current) => ({ ...current, [slot.id]: false }))
       setStatus(slot.id, 'Nomainīts')
       setMessage(`${slot.label_lv} attēls nomainīts.`)
     } catch (uploadError) {
@@ -151,6 +156,7 @@ export default function AdminSectionImages() {
       })
 
       setSlotItems((current) => ({ ...current, [slot.id]: updated }))
+      setDirtySlots((current) => ({ ...current, [slot.id]: false }))
       setStatus(slot.id, 'Saglabāts')
       setMessage(`${slot.label_lv} alt teksts saglabāts.`)
     } catch (saveError) {
@@ -166,8 +172,8 @@ export default function AdminSectionImages() {
       <div className="admin-panel-head">
         <div>
           <span className="admin-kicker">Sadaļu bildes</span>
-          <h2>Sadaļu attēli</h2>
-          <p>Katrs attēls ir fiksēts slots publiskajā lapā. Augšupielāde nomaina attiecīgā slota attēlu.</p>
+          <h2>Fiksētie lapas attēli</h2>
+          <p>Katrs ieraksts ir konkrēta vieta publiskajā lapā. Augšupielāde nomaina attiecīgo attēlu, nevis veido jaunu galeriju.</p>
         </div>
       </div>
 
@@ -180,69 +186,84 @@ export default function AdminSectionImages() {
         </div>
       )}
 
-      <div className="admin-slot-grid">
-        {editableImageSlots.map((slot) => {
-          const item = slotItems[slot.id]
-          const previewUrl = item?.url || slot.fallbackUrl
-          const busy = savingSlot === slot.id
-
-          return (
-            <article className="admin-slot-card" key={slot.id}>
-              <div className="admin-slot-preview">
-                <img src={previewUrl} alt={item?.alt_lv || slot.alt_lv} loading="lazy" />
+      <div className="admin-media-groups">
+        {singleSlotGroups.map((group) => (
+          <section className="admin-media-group" key={group.groupId}>
+            <div className="admin-media-group-head">
+              <div>
+                <h3>{group.groupLabel_lv}</h3>
+                <p>{group.description_lv}</p>
               </div>
+            </div>
 
-              <div className="admin-slot-body">
-                <div className="admin-slot-head">
-                  <div>
-                    <h3>{slot.label_lv}</h3>
-                    <p>{slot.description_lv}</p>
-                  </div>
-                  <span className="admin-slot-id">{slot.id}</span>
-                </div>
+            <div className="admin-slot-grid">
+              {group.slots.map((slot) => {
+                const item = slotItems[slot.id]
+                const previewUrl = item?.url || slot.fallbackUrl
+                const busy = savingSlot === slot.id
 
-                <p className="admin-slot-usage">{slot.usage_lv}</p>
+                return (
+                  <article className="admin-slot-card" key={slot.id}>
+                    <div className="admin-slot-preview">
+                      <img src={previewUrl} alt={item?.alt_lv || slot.alt_lv} loading="lazy" />
+                    </div>
 
-                <div className="admin-language-grid admin-language-grid--compact">
-                  {languages.map((lang) => (
-                    <label className="admin-field" key={lang.key}>
-                      <span>Alt teksts {lang.label}</span>
-                      <input
-                        value={slotAltValue(item, slot, lang.key)}
-                        onChange={(event) => updateSlotAlt(slot.id, lang.key, event.target.value)}
-                      />
-                    </label>
-                  ))}
-                </div>
+                    <div className="admin-slot-body">
+                      <div className="admin-slot-head">
+                        <div>
+                          <h3>{slot.label_lv}</h3>
+                          <p>{slot.description_lv}</p>
+                        </div>
+                        <span className="admin-slot-id">{slot.id}</span>
+                      </div>
 
-                <div className="admin-row-actions admin-row-actions--compact">
-                  <label className={`admin-secondary-btn admin-file-button${busy ? ' admin-file-button--disabled' : ''}`}>
-                    Nomainīt attēlu
-                    <input
-                      type="file"
-                      accept="image/*"
-                      disabled={busy}
-                      onChange={(event) => {
-                        const selectedFile = event.target.files?.[0]
-                        event.target.value = ''
-                        handleReplace(slot, selectedFile)
-                      }}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    className="admin-primary-btn"
-                    onClick={() => handleSaveAlt(slot)}
-                    disabled={busy || !item?.id}
-                  >
-                    {busy ? 'Saglabā...' : 'Saglabāt'}
-                  </button>
-                  <span className="admin-slot-status">{slotStatus[slot.id]}</span>
-                </div>
-              </div>
-            </article>
-          )
-        })}
+                      <p className="admin-slot-usage">{slot.usage_lv}</p>
+
+                      <div className="admin-language-grid admin-language-grid--compact">
+                        {languages.map((lang) => (
+                          <label className="admin-field" key={lang.key}>
+                            <span>Alt teksts {lang.label}</span>
+                            <input
+                              value={slotAltValue(item, slot, lang.key)}
+                              onChange={(event) => updateSlotAlt(slot.id, lang.key, event.target.value)}
+                            />
+                          </label>
+                        ))}
+                      </div>
+
+                      <div className="admin-row-actions admin-row-actions--compact">
+                        <label className={`admin-secondary-btn admin-file-button${busy ? ' admin-file-button--disabled' : ''}`}>
+                          Nomainīt attēlu
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={busy}
+                            onChange={(event) => {
+                              const selectedFile = event.target.files?.[0]
+                              event.target.value = ''
+                              handleReplace(slot, selectedFile)
+                            }}
+                          />
+                        </label>
+                        {dirtySlots[slot.id] ? (
+                          <button
+                            type="button"
+                            className="admin-primary-btn"
+                            onClick={() => handleSaveAlt(slot)}
+                            disabled={busy || !item?.id}
+                          >
+                            {busy ? 'Saglabā...' : 'Saglabāt'}
+                          </button>
+                        ) : null}
+                        <span className="admin-slot-status">{slotStatus[slot.id]}</span>
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+        ))}
       </div>
     </div>
   )

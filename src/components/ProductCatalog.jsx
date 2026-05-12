@@ -1,6 +1,7 @@
 import './ProductCatalog.css'
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { getActiveMedia } from '../lib/cmsApi'
 import { useImageSlot } from '../lib/useImageSlot'
 
 const compactMedia = [
@@ -176,6 +177,7 @@ const classicOpenMedia = [
 const products = [
   {
     id: 'compact',
+    gallerySection: 'product_compact_gallery',
     name: 'CANADA COMPACT APVIDUS RAGAVAS',
     subtitle: '1.40 × 0.65 m · 5 kg',
     image: '/mazasragavas.jpg',
@@ -221,6 +223,7 @@ const products = [
   },
   {
     id: 'classic',
+    gallerySection: 'product_classic_gallery',
     name: 'CANADA CLASSIC APVIDUS RAGAVAS',
     subtitle: '2.33 × 0.85 m · 14 kg',
     image: '/canadaplukan.jpg',
@@ -266,6 +269,7 @@ const products = [
   },
   {
     id: 'classic-open',
+    gallerySection: 'product_classic_open_gallery',
     name: 'CANADA CLASSIC OPEN APVIDUS RAGAVAS',
     subtitle: '2.33 × 0.85 m · 14 kg',
     image: '/ragavasbig.png',
@@ -329,6 +333,54 @@ const expandTransition = {
   ease: [0.22, 0.61, 0.36, 1],
 }
 
+const productMediaText = {
+  close: 'Aizvērt',
+  previous: 'Iepriekšējais medijs',
+  next: 'Nākamais medijs',
+  zoom: 'Tālummaiņa',
+  openFullscreen: 'Atvērt mediju pilnekrānā',
+}
+
+function textFallback(item, field, fallback = '') {
+  return item?.[`${field}_lv`] || item?.[`${field}_en`] || item?.[`${field}_ru`] || fallback
+}
+
+function normalizeCmsProductMedia(items) {
+  return items
+    .filter((item) => item?.url)
+    .map((item, index) => {
+      const label = textFallback(item, 'title', textFallback(item, 'alt', `Produkta attēls ${index + 1}`))
+
+      return {
+        id: item.id,
+        type: 'image',
+        src: item.url,
+        thumb: item.url,
+        alt: textFallback(item, 'alt', label),
+        label,
+        sort_order: Number(item.sort_order) || index + 1,
+      }
+    })
+    .sort((a, b) => a.sort_order - b.sort_order)
+}
+
+function getProductMedia(product, galleryRows) {
+  const cmsImages = normalizeCmsProductMedia(galleryRows)
+  if (cmsImages.length === 0) return product.media
+
+  const fallbackVideo = product.media.find((item) => item.type === 'video')
+  if (!fallbackVideo) return cmsImages
+
+  return [
+    ...cmsImages,
+    {
+      ...fallbackVideo,
+      thumb: cmsImages[0].thumb,
+      poster: cmsImages[0].src,
+    },
+  ]
+}
+
 function getMediaCountLabel(media) {
   const imageCount = media.filter((item) => item.type === 'image').length
   const videoCount = media.filter((item) => item.type === 'video').length
@@ -340,14 +392,20 @@ function getMediaCountLabel(media) {
   return `${imageCount} foto + ${videoCount} video`
 }
 
-function ProductMediaViewer({ product, activeMediaId, onSelect }) {
+function getProductMediaLabel(item, index = 0) {
+  return item?.label || item?.alt || `Medijs ${index + 1}`
+}
+
+function ProductMediaViewer({ product, activeMediaId, onSelect, onOpenFullscreen }) {
   const activeMedia =
     product.media.find((item) => item.id === activeMediaId) ?? product.media[0]
+  const activeIndex = product.media.findIndex((item) => item.id === activeMedia.id)
+  const activeLabel = getProductMediaLabel(activeMedia, activeIndex)
 
   return (
     <aside className="catalog-media-viewer">
-      <div className="catalog-media-stage">
-        {activeMedia.type === 'video' ? (
+      {activeMedia.type === 'video' ? (
+        <div className="catalog-media-stage catalog-media-stage--video">
           <video
             key={activeMedia.id}
             controls
@@ -358,7 +416,21 @@ function ProductMediaViewer({ product, activeMediaId, onSelect }) {
             <source src={activeMedia.src} type="video/mp4" />
             Jūsu pārlūks neatbalsta video atskaņošanu.
           </video>
-        ) : (
+          <button
+            type="button"
+            className="catalog-media-expand"
+            onClick={() => onOpenFullscreen(activeMedia.id)}
+          >
+            Pilnekrānā
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="catalog-media-stage catalog-media-stage--clickable"
+          onClick={() => onOpenFullscreen(activeMedia.id)}
+          aria-label={`${productMediaText.openFullscreen}: ${activeLabel}`}
+        >
           <img
             key={activeMedia.id}
             src={activeMedia.src}
@@ -366,26 +438,28 @@ function ProductMediaViewer({ product, activeMediaId, onSelect }) {
             loading="lazy"
             decoding="async"
           />
-        )}
-      </div>
+          <span className="catalog-media-expand">Pilnekrānā</span>
+        </button>
+      )}
 
       <div className="catalog-media-meta">
         <div>
           <span className="catalog-detail-label">
             {activeMedia.type === 'video' ? 'Video' : 'Foto'}
           </span>
-          <p>{activeMedia.label}</p>
+          <p>{activeLabel}</p>
         </div>
         <span className="catalog-media-count">{getMediaCountLabel(product.media)}</span>
       </div>
 
       <div className="catalog-media-thumbnails" role="list" aria-label={`${product.name} mediji`}>
-        {product.media.map((item) => (
+        {product.media.map((item, index) => (
           <button
             key={item.id}
             type="button"
             className={`catalog-thumb${activeMedia.id === item.id ? ' catalog-thumb--active' : ''}`}
             onClick={() => onSelect(item.id)}
+            aria-label={getProductMediaLabel(item, index)}
             aria-pressed={activeMedia.id === item.id}
           >
             <img
@@ -405,77 +479,382 @@ function ProductMediaViewer({ product, activeMediaId, onSelect }) {
   )
 }
 
-function ExpandedProductDetails({ product, activeMediaId, onSelect }) {
+function ProductMediaFullscreen({ product, activeMediaId, onSelect, onClose }) {
+  const selectedIndex = Math.max(0, product.media.findIndex((item) => item.id === activeMediaId))
+  const selectedMedia = product.media[selectedIndex] ?? product.media[0]
+  const [zoom, setZoom] = useState(100)
+  const [pan, setPan] = useState({ x: 0, y: 0 })
+  const dragRef = useRef({
+    active: false,
+    moved: false,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    originX: 0,
+    originY: 0,
+  })
+
+  const resetZoom = useCallback(() => {
+    setZoom(100)
+    setPan({ x: 0, y: 0 })
+    dragRef.current.active = false
+    dragRef.current.moved = false
+  }, [])
+
+  const updateZoom = useCallback((value) => {
+    const nextZoom = Number(value)
+    setZoom(nextZoom)
+    if (nextZoom <= 100) {
+      setPan({ x: 0, y: 0 })
+    }
+  }, [])
+
+  const selectMedia = useCallback((index) => {
+    if (product.media.length === 0) return
+    const nextIndex = (index + product.media.length) % product.media.length
+    onSelect(product.media[nextIndex].id)
+    resetZoom()
+  }, [onSelect, product.media, resetZoom])
+
+  const previousMedia = useCallback(() => {
+    selectMedia(selectedIndex - 1)
+  }, [selectMedia, selectedIndex])
+
+  const nextMedia = useCallback(() => {
+    selectMedia(selectedIndex + 1)
+  }, [selectMedia, selectedIndex])
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
+  useEffect(() => {
+    resetZoom()
+  }, [resetZoom, selectedMedia?.id, selectedMedia?.type])
+
+  useEffect(() => {
+    const handler = (event) => {
+      if (event.key === 'Escape') onClose()
+      if (event.key === 'ArrowLeft') previousMedia()
+      if (event.key === 'ArrowRight') nextMedia()
+    }
+
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [nextMedia, onClose, previousMedia])
+
+  const handlePointerDown = (event) => {
+    if (selectedMedia.type !== 'image' || zoom <= 100) return
+
+    dragRef.current = {
+      active: true,
+      moved: false,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: pan.x,
+      originY: pan.y,
+    }
+
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+  }
+
+  const handlePointerMove = (event) => {
+    const drag = dragRef.current
+    if (!drag.active || drag.pointerId !== event.pointerId) return
+
+    const deltaX = event.clientX - drag.startX
+    const deltaY = event.clientY - drag.startY
+    if (Math.abs(deltaX) + Math.abs(deltaY) > 6) drag.moved = true
+
+    setPan({
+      x: drag.originX + deltaX,
+      y: drag.originY + deltaY,
+    })
+  }
+
+  const handlePointerUp = (event) => {
+    const drag = dragRef.current
+    if (drag.pointerId === event.pointerId) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId)
+      dragRef.current.active = false
+      dragRef.current.pointerId = null
+    }
+  }
+
+  if (!selectedMedia) return null
+
+  const selectedLabel = getProductMediaLabel(selectedMedia, selectedIndex)
+  const isImage = selectedMedia.type === 'image'
+
   return (
     <motion.div
-      className="catalog-expanded"
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 'auto', opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
+      className="catalog-media-modal"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="catalog-media-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${product.name} mediju skatītājs`}
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 18, scale: 0.98 }}
+        transition={{ duration: 0.22 }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="catalog-media-modal-topbar">
+          <div className="catalog-media-modal-title">
+            <span>{selectedIndex + 1} / {product.media.length}</span>
+            <p>{selectedLabel}</p>
+          </div>
+
+          <div className="catalog-media-modal-actions">
+            {isImage ? (
+              <div className="catalog-media-zoom-control" aria-label={productMediaText.zoom}>
+                <span>{productMediaText.zoom}</span>
+                <input
+                  type="range"
+                  min="100"
+                  max="500"
+                  step="25"
+                  value={zoom}
+                  onChange={(event) => updateZoom(event.target.value)}
+                />
+                <button type="button" className="catalog-media-zoom-btn" onClick={() => updateZoom(100)}>
+                  {zoom}%
+                </button>
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              className="catalog-media-modal-icon-btn"
+              onClick={onClose}
+              aria-label={productMediaText.close}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="catalog-media-modal-stage">
+          <button
+            type="button"
+            className="catalog-media-modal-nav catalog-media-modal-nav--prev"
+            onClick={previousMedia}
+            aria-label={productMediaText.previous}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <div
+            className={`catalog-media-modal-media${isImage && zoom > 100 ? ' catalog-media-modal-media--zoomed' : ''}`}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          >
+            {isImage ? (
+              <img
+                key={selectedMedia.id}
+                src={selectedMedia.src}
+                alt={selectedMedia.alt}
+                draggable="false"
+                decoding="async"
+                style={{
+                  transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom / 100})`,
+                }}
+              />
+            ) : (
+              <video
+                key={selectedMedia.id}
+                controls
+                playsInline
+                preload="metadata"
+                poster={selectedMedia.poster}
+              >
+                <source src={selectedMedia.src} type="video/mp4" />
+                Jūsu pārlūks neatbalsta video atskaņošanu.
+              </video>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="catalog-media-modal-nav catalog-media-modal-nav--next"
+            onClick={nextMedia}
+            aria-label={productMediaText.next}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="catalog-media-modal-thumbs" aria-label={`${product.name} pilnekrāna mediji`}>
+          {product.media.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`catalog-media-modal-thumb${selectedMedia.id === item.id ? ' catalog-media-modal-thumb--active' : ''}`}
+              onClick={() => selectMedia(index)}
+              aria-label={getProductMediaLabel(item, index)}
+              aria-pressed={selectedMedia.id === item.id}
+            >
+              <img
+                src={item.thumb ?? item.poster ?? item.src}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+              />
+              {item.type === 'video' ? (
+                <span>Video</span>
+              ) : null}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function ProductDetailMainSections({ product }) {
+  return (
+    <section className="catalog-detail-copy-panel">
+      <div className="catalog-detail-block catalog-detail-block--intro">
+        <h4>Īss ievads</h4>
+        <p>{product.details.intro}</p>
+      </div>
+
+      <div className="catalog-detail-block">
+        <h4>Pielietojums</h4>
+        <ul className="catalog-detail-list">
+          {product.details.useCases.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="catalog-detail-note">
+        <h4>{product.details.importantTitle}</h4>
+        <p>{product.details.importantNote}</p>
+      </div>
+    </section>
+  )
+}
+
+function ProductDetailSideSections({ product }) {
+  return (
+    <>
+      <section className="catalog-detail-spec-panel">
+        <h4>Tehniskā specifikācija</h4>
+        <dl className="catalog-spec-list">
+          {product.details.specs.map((spec) => (
+            <div key={spec.label} className="catalog-spec-line">
+              <dt>{spec.label}</dt>
+              <dd>{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section className="catalog-detail-delivery-panel">
+        <h4>{product.details.deliveryTitle}</h4>
+        <p>{product.details.deliveryNote}</p>
+      </section>
+
+      {product.details.extraPanels?.map((panel) => (
+        <section key={panel.title} className="catalog-detail-delivery-panel">
+          <h4>{panel.title}</h4>
+          <p>{panel.content}</p>
+        </section>
+      ))}
+    </>
+  )
+}
+
+function ProductDetailActions({ product, onClose }) {
+  return (
+    <div className="catalog-detail-actions">
+      <p>{product.details.footerNote}</p>
+      <div className="catalog-detail-actions-row">
+        <a
+          href={product.buyUrl}
+          className="catalog-action-btn catalog-action-btn--primary catalog-action-btn--compact"
+        >
+          Pirkt
+        </a>
+        <a href="#kontakti" className="catalog-action-btn catalog-action-btn--secondary catalog-action-btn--compact">
+          Sazināties
+        </a>
+        <button
+          type="button"
+          className="catalog-action-btn catalog-action-btn--ghost catalog-action-btn--compact"
+          onClick={onClose}
+        >
+          Aizvērt informāciju
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ProductDetails({ product, activeMediaId, onSelect, onClose, onOpenFullscreen, variant = 'desktop' }) {
+  const animationProps =
+    variant === 'mobile'
+      ? {
+          initial: { height: 0, opacity: 0 },
+          animate: { height: 'auto', opacity: 1 },
+          exit: { height: 0, opacity: 0 },
+        }
+      : {
+          initial: { opacity: 0, y: 18 },
+          animate: { opacity: 1, y: 0 },
+          exit: { opacity: 0, y: 18 },
+        }
+
+  return (
+    <motion.div
+      className={`catalog-details catalog-details--${variant}`}
+      {...animationProps}
       transition={expandTransition}
     >
-      <div className="catalog-expanded-inner">
-        <div className="catalog-expanded-copy">
-          <section className="catalog-intro-card">
-            <span className="catalog-detail-label">Īss ievads</span>
-            <p>{product.details.intro}</p>
-          </section>
+      <div className="catalog-details-shell">
+        <div className="catalog-details-head">
+          <span className="catalog-detail-label">Pilna informācija</span>
+          <h3>{product.name}</h3>
+          <p>{product.summary}</p>
+        </div>
 
-          <div className="catalog-detail-grid">
-            <section className="catalog-detail-panel">
-              <h4>Tehniskā specifikācija</h4>
-              <dl className="catalog-spec-list">
-                {product.details.specs.map((spec) => (
-                  <div key={spec.label} className="catalog-spec-line">
-                    <dt>{spec.label}</dt>
-                    <dd>{spec.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-
-            <section className="catalog-detail-panel">
-              <h4>Pielietojums</h4>
-              <ul className="catalog-detail-list">
-                {product.details.useCases.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="catalog-detail-panel">
-              <h4>{product.details.importantTitle}</h4>
-              <p>{product.details.importantNote}</p>
-            </section>
-
-            <section className="catalog-detail-panel">
-              <h4>{product.details.deliveryTitle}</h4>
-              <p>{product.details.deliveryNote}</p>
-            </section>
-
-            {product.details.extraPanels?.map((panel) => (
-              <section key={panel.title} className="catalog-detail-panel">
-                <h4>{panel.title}</h4>
-                <p>{panel.content}</p>
-              </section>
-            ))}
+        <div className="catalog-details-grid">
+          <div className="catalog-details-main">
+            <ProductDetailMainSections product={product} />
           </div>
 
-          <div className="catalog-expanded-footer">
-            <p>{product.details.footerNote}</p>
-            <a
-              href={product.buyUrl}
-              className="catalog-action-btn catalog-action-btn--primary catalog-action-btn--compact"
-            >
-              Pirkt
-            </a>
-          </div>
+          <aside className="catalog-details-side">
+            <ProductDetailSideSections product={product} />
+            <ProductDetailActions product={product} onClose={onClose} />
+          </aside>
         </div>
 
         <ProductMediaViewer
           product={product}
           activeMediaId={activeMediaId}
           onSelect={onSelect}
+          onOpenFullscreen={onOpenFullscreen}
         />
       </div>
     </motion.div>
@@ -488,6 +867,10 @@ export default function ProductCatalog() {
   const classicOpenImage = useImageSlot('product_classic_open', '/ragavasbig.png', 'CANADA CLASSIC OPEN ragavas')
   const [expandedProduct, setExpandedProduct] = useState(null)
   const [activeMediaByProduct, setActiveMediaByProduct] = useState(initialActiveMedia)
+  const [productGalleryMedia, setProductGalleryMedia] = useState({})
+  const [fullscreenProductId, setFullscreenProductId] = useState(null)
+  const sectionRef = useRef(null)
+  const detailsRef = useRef(null)
   const productSlotImages = {
     compact: compactImage,
     classic: classicImage,
@@ -497,10 +880,97 @@ export default function ProductCatalog() {
     ...product,
     image: productSlotImages[product.id]?.src || product.image,
     imageAlt: productSlotImages[product.id]?.alt || product.name,
+    media: getProductMedia(product, productGalleryMedia[product.gallerySection] || []),
   }))
+  const selectedProduct = productsWithImages.find((product) => product.id === expandedProduct)
+  const fullscreenProduct = productsWithImages.find((product) => product.id === fullscreenProductId)
+
+  useEffect(() => {
+    let mounted = true
+    const sections = products.map((product) => product.gallerySection)
+
+    Promise.all(sections.map((section) => getActiveMedia(section)))
+      .then((results) => {
+        if (!mounted) return
+
+        setProductGalleryMedia(
+          sections.reduce((map, section, index) => {
+            map[section] = results[index]
+            return map
+          }, {}),
+        )
+      })
+      .catch(() => {})
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    setActiveMediaByProduct((current) => {
+      let changed = false
+      const next = { ...current }
+
+      productsWithImages.forEach((product) => {
+        if (!product.media.some((item) => item.id === current[product.id])) {
+          next[product.id] = product.media[0]?.id
+          changed = true
+        }
+      })
+
+      return changed ? next : current
+    })
+  }, [productGalleryMedia])
+
+  useEffect(() => {
+    if (!expandedProduct || !detailsRef.current) return
+    if (!window.matchMedia('(min-width: 900px)').matches) return
+
+    window.requestAnimationFrame(() => {
+      const top = detailsRef.current.getBoundingClientRect().top + window.scrollY - 92
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+    })
+  }, [expandedProduct])
+
+  const scrollToProductCatalog = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const target = sectionRef.current
+      if (!target) return
+
+      const top = target.getBoundingClientRect().top + window.scrollY - 96
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+    })
+  }, [])
+
+  const updateActiveMedia = useCallback((productId, mediaId) => {
+    setActiveMediaByProduct((current) => ({
+      ...current,
+      [productId]: mediaId,
+    }))
+  }, [])
+
+  const openProductMedia = useCallback((productId, mediaId) => {
+    updateActiveMedia(productId, mediaId)
+    setFullscreenProductId(productId)
+  }, [updateActiveMedia])
+
+  const closeProductDetails = useCallback(() => {
+    setExpandedProduct(null)
+    scrollToProductCatalog()
+  }, [scrollToProductCatalog])
+
+  const toggleProductDetails = (productId) => {
+    if (expandedProduct === productId) {
+      closeProductDetails()
+      return
+    }
+
+    setExpandedProduct(productId)
+  }
 
   return (
-    <section className="section product-catalog" id="produkti">
+    <section className="section product-catalog" id="produkti" ref={sectionRef}>
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -587,11 +1057,7 @@ export default function ProductCatalog() {
                       <button
                         type="button"
                         className="catalog-action-btn catalog-action-btn--secondary"
-                        onClick={() =>
-                          setExpandedProduct((current) =>
-                            current === product.id ? null : product.id
-                          )
-                        }
+                        onClick={() => toggleProductDetails(product.id)}
                         aria-expanded={isExpanded}
                         aria-controls={`${product.id}-details`}
                       >
@@ -619,16 +1085,14 @@ export default function ProductCatalog() {
                   {product.expandable ? (
                     <AnimatePresence initial={false}>
                       {isExpanded && (
-                        <div id={`${product.id}-details`}>
-                          <ExpandedProductDetails
+                        <div id={`${product.id}-details`} className="catalog-mobile-details">
+                          <ProductDetails
                             product={product}
                             activeMediaId={activeMediaByProduct[product.id]}
-                            onSelect={(mediaId) =>
-                              setActiveMediaByProduct((current) => ({
-                                ...current,
-                                [product.id]: mediaId,
-                              }))
-                            }
+                            onSelect={(mediaId) => updateActiveMedia(product.id, mediaId)}
+                            onClose={closeProductDetails}
+                            onOpenFullscreen={(mediaId) => openProductMedia(product.id, mediaId)}
+                            variant="mobile"
                           />
                         </div>
                       )}
@@ -639,7 +1103,35 @@ export default function ProductCatalog() {
             )
           })}
         </div>
+
+        <div className="catalog-desktop-details" ref={detailsRef}>
+          <AnimatePresence initial={false}>
+            {selectedProduct && (
+              <ProductDetails
+                key={selectedProduct.id}
+                product={selectedProduct}
+                activeMediaId={activeMediaByProduct[selectedProduct.id]}
+                onSelect={(mediaId) => updateActiveMedia(selectedProduct.id, mediaId)}
+                onClose={closeProductDetails}
+                onOpenFullscreen={(mediaId) => openProductMedia(selectedProduct.id, mediaId)}
+                variant="desktop"
+              />
+            )}
+          </AnimatePresence>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {fullscreenProduct && (
+          <ProductMediaFullscreen
+            key={fullscreenProduct.id}
+            product={fullscreenProduct}
+            activeMediaId={activeMediaByProduct[fullscreenProduct.id]}
+            onSelect={(mediaId) => updateActiveMedia(fullscreenProduct.id, mediaId)}
+            onClose={() => setFullscreenProductId(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   )
 }

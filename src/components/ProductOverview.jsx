@@ -40,14 +40,29 @@ const features = [
 ]
 
 export default function ProductOverview() {
-  const overviewImage = useImageSlot('product_overview', '/mazasragavas.jpg', 'CANADA COMPACT ragavas produkta pārskatā')
-  const classicImage = useImageSlot('product_classic', '/canadaplukan.jpg', 'CANADA CLASSIC ragavas')
-  const classicOpenImage = useImageSlot('product_classic_open', '/ragavasbig.png', 'CANADA CLASSIC OPEN ragavas')
+  const overviewCompactImage = useImageSlot(
+    'product_overview_compact',
+    '/mazasragavas.jpg',
+    'CANADA COMPACT ragavas produkta pārskatā',
+    { legacySlotId: 'product_overview' },
+  )
+  const overviewClassicImage = useImageSlot(
+    'product_overview_classic',
+    '/canadaplukan.jpg',
+    'CANADA CLASSIC ragavas produkta pārskatā',
+    { legacySlotId: 'product_classic' },
+  )
+  const overviewClassicOpenImage = useImageSlot(
+    'product_overview_classic_open',
+    '/ragavasbig.png',
+    'CANADA CLASSIC OPEN ragavas produkta pārskatā',
+    { legacySlotId: 'product_classic_open' },
+  )
   const [activeModelId, setActiveModelId] = useState(models[0].id)
   const modelImages = {
-    compact: overviewImage,
-    classic: classicImage,
-    'classic-open': classicOpenImage,
+    compact: overviewCompactImage,
+    classic: overviewClassicImage,
+    'classic-open': overviewClassicOpenImage,
   }
   const modelsWithImages = models.map((model) => ({
     ...model,

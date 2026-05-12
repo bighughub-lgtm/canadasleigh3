@@ -2,6 +2,7 @@ import './admin.css'
 
 const tabs = [
   { id: 'gallery', label: 'Galerija' },
+  { id: 'product-galleries', label: 'Produktu galerijas' },
   { id: 'videos', label: 'Videoklipi' },
   { id: 'sections', label: 'Sadaļu bildes' },
 ]

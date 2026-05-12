@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import AdminLogin from './AdminLogin'
 import AdminLayout from './AdminLayout'
 import AdminGallery from './AdminGallery'
+import AdminProductGalleries from './AdminProductGalleries'
 import AdminVideos from './AdminVideos'
 import AdminSectionImages from './AdminSectionImages'
 import { isCurrentUserAdmin } from '../lib/cmsApi'
@@ -109,6 +110,7 @@ export default function AdminDashboard() {
       userEmail={user?.email}
     >
       {activeTab === 'gallery' && <AdminGallery />}
+      {activeTab === 'product-galleries' && <AdminProductGalleries />}
       {activeTab === 'videos' && <AdminVideos />}
       {activeTab === 'sections' && <AdminSectionImages />}
     </AdminLayout>

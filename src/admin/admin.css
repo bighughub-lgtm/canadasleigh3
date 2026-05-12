@@ -340,6 +340,85 @@
   margin-top: 14px;
 }
 
+.admin-media-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-media-group {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  background: rgba(19, 19, 24, 0.46);
+  padding: 14px;
+}
+
+.admin-media-group--active {
+  margin-top: 14px;
+}
+
+.admin-media-group-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.admin-media-group-head h3 {
+  color: var(--text);
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.admin-media-group-head p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.admin-section-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.admin-section-tab {
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.admin-section-tab span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gold-light);
+  font-size: 11px;
+}
+
+.admin-section-tab:hover,
+.admin-section-tab--active {
+  border-color: rgba(201, 146, 63, 0.34);
+  background: rgba(201, 146, 63, 0.1);
+  color: var(--text);
+}
+
 .admin-media-row {
   display: grid;
   grid-template-columns: 132px minmax(0, 1fr);
@@ -580,7 +659,7 @@
   }
 
   .admin-tabs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .admin-logout-btn {
@@ -619,7 +698,8 @@
   .admin-panel-head,
   .admin-row-top,
   .admin-row-actions,
-  .admin-slot-head {
+  .admin-slot-head,
+  .admin-media-group-head {
     flex-direction: column;
     align-items: stretch;
   }
@@ -628,6 +708,7 @@
   .admin-create-box,
   .admin-language-grid,
   .admin-tabs,
+  .admin-section-tabs,
   .admin-media-row {
     grid-template-columns: 1fr;
   }

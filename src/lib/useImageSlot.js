@@ -6,16 +6,23 @@ function textFallback(item, field, fallback = '') {
   return item?.[`${field}_lv`] || item?.[`${field}_en`] || item?.[`${field}_ru`] || fallback
 }
 
-export function useImageSlot(slotId, fallbackUrl, fallbackAlt = '') {
+export function useImageSlot(slotId, fallbackUrl, fallbackAlt = '', options = {}) {
   const slot = getImageSlotDefinition(slotId)
   const [media, setMedia] = useState(null)
+  const legacySlotId = options.legacySlotId
   const safeFallbackUrl = fallbackUrl || slot?.fallbackUrl || ''
   const safeFallbackAlt = fallbackAlt || slot?.alt_lv || ''
 
   useEffect(() => {
     let mounted = true
 
-    getImageSlot(slotId)
+    async function loadSlot() {
+      const image = await getImageSlot(slotId)
+      if (image?.url || !legacySlotId) return image
+      return getImageSlot(legacySlotId)
+    }
+
+    loadSlot()
       .then((image) => {
         if (mounted && image?.url) setMedia(image)
       })
@@ -24,7 +31,7 @@ export function useImageSlot(slotId, fallbackUrl, fallbackAlt = '') {
     return () => {
       mounted = false
     }
-  }, [slotId])
+  }, [legacySlotId, slotId])
 
   return {
     media,
