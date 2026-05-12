@@ -5,31 +5,31 @@ import { motion, AnimatePresence } from 'framer-motion'
 const faqs = [
   {
     q: 'Kādi ir piegādes laiki?',
-    a: 'Piegāde parasti notiek 3–7 darba dienu laikā pēc pasūtījuma apstiprināšanas. Sazinieties ar mums pa tālruni vai e-pastu, lai apstiprinātu pasūtījumu un vienotos par apmaksu.',
+    a: 'Piegāde parasti notiek 3–7 darba dienu laikā pēc pasūtījuma apstiprināšanas. Sazinieties ar mums pa tālruni vai e-pastu, lai uzzinātu pasūtījuma statusu un vienotos par saņemšanu.',
   },
   {
     q: 'Kāds materiāls tiek izmantots?',
-    a: 'Ragavas ir izgatavotas no HD polietilēna (HDPE) — tās ir gan elastīgas, gan triecienizturīgas. Ragavas neplaisā atsitoties pret akmeņiem un var izturēt pat auto pārbraukšanu pāri tām. Materiāls neabsorbē mitrumu vai smakas un nerodas rūsa.',
+    a: 'Ragavas ir izgatavotas no HD polietilēna (HDPE) — tas ir gan elastīgs, gan triecienizturīgs pie jebkurām temperatūrām. Ragavas neplaisā atsitoties pret akmeņiem un var izturēt auto pārbraukšanu pāri tām. Materiāls neabsorbē mitrumu vai smakas.',
   },
   {
     q: 'Vai ragavas var vilkt pa grants ceļiem?',
-    a: 'Nē — ragavas nav paredzētas vilkšanai pa grants ceļiem. Ja šo nosacījumu ievēro, ragavas ir praktiski nenolietojamas un kalpos daudzus gadus.',
+    a: 'Nē — ragavas nav paredzētas vilkšanai pa grants jeb asfalta ceļiem. Ja šo nosacījumu ievēro, ragavas ir praktiski nenolietojamas un kalpos ļoti ilgu laiku.',
   },
   {
     q: 'Kādā temperatūrā var lietot ragavas?',
-    a: 'Ragavas darbojas plašā temperatūras diapazonā — no −40°C līdz +40°C. HD polietilēns saglabā elastību stiprā aukstumā un nedeformējas siltākā laikā, tādēļ ragavas der visu gadu.',
+    a: 'Ragavas darbojas plašā temperatūras diapazonā — no −40°C līdz +40°C. HD polietilēns saglabā elastību stiprā aukstumā un augstspiediena siltākā laikā, tādēļ ragavas der izmantošanai visu gadu.',
   },
   {
     q: 'Vai ragavas var pievienot ATV vai sniega motociklam?',
-    a: 'Jā. Canada Pulkan ragavas var vilkt ar ATV, sniega motociklu, zirgu vai ar rokām. Tās ir ļoti elastīgas un viegli velkamas — slīd kā pa sniegu pāri dažādām virsmām.',
+    a: 'Jā, Canada Apvidus ragavas var vilkt ar ATV, sniega motociklu vai ar rokām. Tās ir ļoti elastīgas un viegli velkamas — slīd kā pa sniegu pāri dažādām virsmām.',
   },
   {
     q: 'Kādiem mērķiem vēl der ragavas, ne tikai medībām?',
-    a: 'Ragavas ir piemērotas medībām, makšķerēšanai, lauksaimniecībai, mežistrādei, ekspedīcijām un dārkopībai. Tajās var pārvadāt baļķus, lauksaimniecības produktus, smagu aprīkojumu, un tās var izmantot arī kā nestuves mežā ārkārtas situācijā.',
+    a: 'Ragavas ir piemērotas arī makšķerēšanai, lauksaimniecības darbiem, ekspedīcijām un mežistrādei. Tajās var pārvadāt baļķus, lauksaimniecības produktus, smagu aprīkojumu, un tās var izmantot arī kā nestuves ārkārtās situācijās.',
   },
   {
     q: 'Kā tīrīt un kopt ragavas?',
-    a: 'Kopšana ir ļoti vienkārša. HD polietilēns neabsorbē mitrumu, smakas vai netīrumus. Pēc lietošanas pietiek noskalot ar ūdeni. Nav nepieciešama speciāla konservācija vai ziemošanas apstrāde.',
+    a: 'Kopšana ir ļoti vienkārša. HD polietilēns neabsorbē mitrumu, smakas vai netīrumus. Pēc lietošanas pietiek noskalot ar ūdeni. Nav nepieciešama īpaša apstrāde vai konservācija.',
   },
   {
     q: 'Vai var pasūtīt piegādi uz uzņēmuma adresi?',

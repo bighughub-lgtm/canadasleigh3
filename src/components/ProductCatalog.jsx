@@ -175,42 +175,42 @@ const classicOpenMedia = [
 const products = [
   {
     id: 'compact',
-    name: 'TERRAINSLEIGH CANADA COMPACT mednieku ragavas',
+    name: 'CANADA COMPACT APVIDUS RAGAVAS',
     subtitle: '1.40 × 0.65 m · 5 kg',
     image: '/mazasragavas.jpg',
-    price: '€250.00',
+    price: '€260.00',
     availability: 'Ir uz vietas',
     tag: 'Kompakts',
     tagFeatured: true,
     summary:
-      'Viegls un uzticams modelis medniekiem un makšķerniekiem, kuriem vajadzīga kompakta un izturīga ragavu platforma bezceļu apstākļiem.',
+      'Viegls un uzticams modelis medniekiem un ziemas makšķerniekiem, kuriem vajadzīgas kompaktas un izturīgas ragavas bezceļu apstākļiem.',
     features: [
       'Ražots Zviedrijā',
       '8 mm HD polietilēns',
       'Viegli kopjamas',
-      'Piemērotas smagiem medījumiem un aprīkojumam',
+      'Piemērotas vidēja un neliela, un vidēja izmēra medījumiem un aprīkojumam',
     ],
     buyUrl: 'https://buy.stripe.com/8x2eV7cZx8dAfCxaJy6Vq00',
     expandable: true,
     media: compactMedia,
     details: {
       intro:
-        'TERRAINSLEIGH CANADA COMPACT ir kompakta izmēra mednieku un makšķernieku ragavas ikdienas vilkšanai apvidos, kur vajadzīga izturība, elastība un vienkārša kopšana. Tās ir gadiem testētas Skandināvijas kalnainajos un akmeņainajos apvidos, un VS Home SIA ir oficiālais ražotāja pārstāvis Baltijas valstīs.',
+        'CANADA COMPACT APVIDUS RAGAVAS ir kompakta izmēra mednieku un ziemas makšķernieku ragavas medījumu un aprīkojuma pārvietošanai bezceļa apvidos, kur vajadzīgs ātrums atpūtai, pastāvot un vienkāršā kopšanā. Tās ir gadiem testētas Skandināvijas kalnainos apvidos. VS Home SIA ir officiālais ražotāja pārstāvis Baltijā.',
       specs: [
         { label: 'Izmēri', value: 'Garums 1.40 m × platums 0.65 m' },
         { label: 'Svars', value: '5 kg' },
         { label: 'Materiāls', value: '8 mm HD polietilēns' },
-        { label: 'Kopšana', value: 'Viegli kopjamas un neuzsūc mitrumu vai smakas' },
+        { label: 'Kopšana', value: 'Viegli kopjamas ar ūdeni' },
         { label: 'Ražošana', value: 'Ražots Zviedrijā' },
       ],
       useCases: [
         'Piemērotas medībām, makšķerēšanai, lauksaimniecības darbiem, ekspedīcijām un mežistrādei.',
-        'Kamanās var vilkt pērno brieža govi, briežu un alņu teļus, mežacūku un stirnas.',
-        'Ērti pārvadāt smagus medījumus, tos nesasmērējot, kā arī baļķus, lauksaimniecības produktus un citu smagu aprīkojumu.',
+        'Ragavāas perfekti piemērotas  vidēja un maza izmēra medījumu pārvietošanai bezceļa apstākļos jebkurā gadalaikā, ieskaitot brieža govi, jaunu briežu bulli, alņa teļu, brieža teļu, mežacūku, stirnu.',
+        'Ērti pārvadāt medījumus, tos nesasmērējot, kā arī malku, lauksaimniecības un citu smagu aprīkojumu.',
       ],
       importantTitle: 'Svarīga piezīme',
       importantNote:
-        'Ragavas nav vēlams vilkt pa grants ceļiem. Ja šo nosacījumu ievēro, tās ir praktiski nenolietojamas un saglabā savu elastību arī pie smagas slodzes.',
+        'Ragavas nav vēlams vilkt pa grants jeb asfalta ceļiem. Ja šo nosacījumu ievēro, tās ir praktiski nenolietojamas un saglabā savu elastību un izturību arī pie ļoti smagas slodzes.',
       deliveryTitle: 'Piegādes piezīme',
       deliveryNote:
         'Cenā nav ierēķināta piegāde. Lūdzu, sazinieties ar mums, lai noskaidrotu piegādes izmaksas un piemērotāko saņemšanas variantu.',
@@ -220,27 +220,27 @@ const products = [
   },
   {
     id: 'classic',
-    name: 'TERRAINSLEIGH CANADA CLASSIC mednieku ragavas',
+    name: 'CANADA CLASSIC APVIDUS RAGAVAS',
     subtitle: '2.33 × 0.85 m · 14 kg',
     image: '/canadaplukan.jpg',
-    price: '€490.00',
+    price: '€550.00',
     availability: 'Ir uz vietas',
     tag: 'Lielākai slodzei',
     tagFeatured: false,
     summary:
-      'Pilna izmēra modelis medījumiem, baļķiem un smagam aprīkojumam, kad vajadzīga maksimāla kravnesība un stabila vilkšana bezceļu apstākļos.',
+      'Pilna izmēra modelis ar aizmugurējo bortu lieliem medījumiem un smagam aprīkojumam, kad vajadzīga maksimāla kravnesība, lokanība un stabila vilkšana bezceļu apstākļos.',
     features: [
       'Ražots Zviedrijā',
       '8 mm HD polietilēns',
       'Vienlaicīgi līdz 2 lieliem alņiem',
-      'Piemērots smagām slodzēm',
+      'Piemērots liela izmēra medījumiem, aprīkojumam un beramām kravām',
     ],
     buyUrl: 'https://buy.stripe.com/14A3cpgbJ8dA8a5cRG6Vq01',
     expandable: true,
     media: classicMedia,
     details: {
       intro:
-        'TERRAINSLEIGH CANADA CLASSIC ir pilna izmēra mednieku ragavas smagām slodzēm un lielam medījumam. Modelis ir gadiem testēts Skandināvijas kalnainajos un akmeņainajos apvidos, kur svarīga ir stabila vilkšana, izturība un materiāla elastība arī pie ļoti lielas slodzes.',
+        'CANADA CLASSIC APVIDUS RAGAVAS ir pilna izmēra modelis smagumu transportēšanai bezceļu apstākļos, kad svarīga ir maksimāla praktiska ekspozīcija. Modelis ir gadiem testēts Skandināvijas kalnainos un akmeņainos apvidos, un tas saglabā to pašu materiāla elastību un triecienizturību kā pārējās Canada Pulkan ragavas.',
       specs: [
         { label: 'Izmēri', value: 'Garums 2.33 m × platums 0.85 m' },
         { label: 'Svars', value: '14 kg' },
@@ -250,42 +250,42 @@ const products = [
       ],
       useCases: [
         'Kamanās var vilkt vienlaicīgi 2 lielus alņus, 2 brieža buļļus vai 3 brieža govis.',
-        'Ērti pārvadāt smagus medījumus, tos nesasmērējot, kā arī baļķus, lauksaimniecības produktus un citu smagu aprīkojumu.',
-        'Piemērotas medībām, makšķerēšanai, lauksaimniecības darbiem, ekspedīcijām un mežistrādei.',
+        'Ērti pārvaadāt medījumus, tos nesasmērējot, kā arī lauksaimniecības un citu smagu aprīkojumu un beramas kravas.',
+        'Piemērotas medībām, lauksaimniecības darbiem, ekspedīcijām, mežistrādei.',
       ],
       importantTitle: 'Svarīga piezīme',
       importantNote:
-        'Ragavas nav vēlams vilkt pa grants ceļiem. Ja šo nosacījumu ievēro, tās ir praktiski nenolietojamas un saglabā savu elastību ilgstošā lietošanā.',
+        'Ragavas nav vēlams vilkt pa grants jeb asfalta ceļiem. Ja šo nosacījumu ievēro, tās ir praktiski nenolietojamas un saglabā savu elastību un izturību arī pie ļoti smagas slodzes.',
       deliveryTitle: 'Piegādes / pārstāvja piezīme',
       deliveryNote:
-        'Piegādes izmaksas tiek saskaņotas atsevišķi. VS Home SIA ir oficiālais ražotāja pārstāvis Baltijas valstīs un palīdzēs vienoties par piemērotāko piegādes vai saņemšanas risinājumu.',
+        'Cenā nav ierēķināta piegāde. VS Home SIA ir oficiālais ražotāja pārstāvis Baltijas valstīs un nodrošina konsultāciju par piemērotāko modeli un piegādes risinājumu.',
       footerNote:
         'Pilnā izmēra korpuss ļauj stabili vilkt ļoti lielas slodzes, saglabājot materiāla elastību starp kokiem, celmiem un akmeņiem.',
     },
   },
   {
     id: 'classic-open',
-    name: 'TERRAINSLEIGH CANADA CLASSIC OPEN mednieku ragavas',
+    name: 'CANADA CLASSIC OPEN APVIDUS RAGAVAS',
     subtitle: '2.33 × 0.85 m · 14 kg',
     image: '/ragavasbig.png',
-    price: '€490.00',
+    price: '€550.00',
     availability: 'Ir uz vietas',
     tag: 'Atvērts dizains',
     tagFeatured: false,
     summary:
-      'Atvērts pilna izmēra modelis ērtākai iekraušanai, smagiem medījumiem un apjomīgām kravām, saglabājot to pašu bezceļu izturību un vilkšanas kvalitāti.',
+      'Pilna izmēra modelis bez aizmugurējā borta lieliem medījumiem un apjomīgām kravām, saglabājot to pašu bezceļu izturību, lokanību un vilkšanas kvalitāti.',
     features: [
       'Ražots Zviedrijā',
-      'Atvērts kravēšanas laukums',
+      'Bez aizmugurējā borta',
       '8 mm HD polietilēns',
-      'Xtension pagarinājums līdz 3,5 m',
+      'Piemērots liela izmēra medījumiem, aprīkojumam un baļķu vilkšanai',
     ],
     buyUrl: 'https://buy.stripe.com/cNi5kxcZx0L88a5dVK6Vq02',
     expandable: true,
     media: classicOpenMedia,
     details: {
       intro:
-        'TERRAINSLEIGH CANADA CLASSIC OPEN ir pilna izmēra atvērtais modelis smagumu transportēšanai bezceļu apstākļos, kad svarīga ir ātra piekļuve kravai un maksimāli praktiska iekraušana. Modelis ir gadiem testēts Skandināvijas kalnainajos un akmeņainajos apvidos, un tas saglabā to pašu materiāla elastību un triecienizturību kā pārējās Canada Pulkan ragavas.',
+        'CANADA CLASSIC OPEN APVIDUS RAGAVAS ir pilna izmēra modelis bez aizmugurējā borta smagumu transportēšanai bezceļu apstākļos. Modelis ir gadiem testēts Skandināvijas kalnainajos un akmeņainajos apvidos, un tas saglabā to pašu materiāla elastību, lokanību un triecienizturību kā pārējās Canada apvidus ragavas.',
       specs: [
         { label: 'Izmēri', value: 'Garums 2.33 m × platums 0.85 m' },
         { label: 'Svars', value: '14 kg' },
@@ -295,15 +295,10 @@ const products = [
       ],
       useCases: [
         'Kamanās var vilkt vienlaicīgi 2 lielus alņus, 2 brieža buļļus vai 3 brieža govis.',
-        'Tajās ir ērti pārvadāt smagus medījumus, tos nesasmērējot, kā arī baļķus, lauksaimniecības produktus un citu smagu aprīkojumu.',
+        'Tajās ir ērti pārvadāt smagus medījumus, tos nesasmērējot, kā arī baļķus, lauksaimniecības un citu smagu aprīkojumu.',
         'Piemērotas medībām, makšķerēšanai, lauksaimniecības darbiem, ekspedīcijām un mežistrādei.',
       ],
       extraPanels: [
-        {
-          title: 'Paplašināšanas iespēja / Xtension',
-          content:
-            'TERRAINSLEIGH CANADA CLASSIC OPEN ragavām ir iespējams pievienot Xtension pagarinājumu, kas iegādājams atsevišķi. Izmantojot Xtension, ragavas var pagarināt līdz 3,5 m.',
-        },
         {
           title: 'Pārstāvja piezīme',
           content:

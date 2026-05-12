@@ -44,15 +44,10 @@ export default function About() {
               VS Home SIA —<br />officiālais izplatītājs
             </h2>
             <p className="about-para">
-              VS Home SIA ir Canada Pulkan apvidus ragavu oficiālais pārstāvis un
-              izplatītājs Latvijā, Lietuvā un Igaunijā. Mēs nodrošinām Baltijas
-              medniekiem, makšķerniekiem un saimniecībām piekļuvi Zviedrijā ražotām,
-              gadiem testētām ragavām.
+              VS Home SIA ir Canada apvidus ragavu oficiālais pārstāvis un izplatītājs Latvijā, Lietuvā un Igaunijā. Mēs nodrošinām Baltijas medniekiem, makšķerniekiem un saimniecībām piekļuvi Zviedrijā ražotām, gadiem testētām ragavām.
             </p>
             <p className="about-para">
-              Canada Pulkan ragavas ir ražotas Zviedrijā un pārbaudītas Skandināvijas
-              kalnainajos un akmeņainajos apvidos. HD polietilēna materiāls nodrošina
-              izturību un elastību no pirmās līdz simtajai ekspedīcijai.
+              Canada apvidus ragavas ir ražotas Zviedrijā un pārbaudītas Skandināvijas kalnainajos un akmeņainajos apvidos. HD polietilēna materiāls un raqavu īpašs dizains nodrošina izturību un elastību praktiski jebkuros apvidus apstākļos.
             </p>
 
             <div className="about-stats">

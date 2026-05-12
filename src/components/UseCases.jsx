@@ -20,7 +20,7 @@ const cases = [
       </svg>
     ),
     title: 'Makšķerēšanai',
-    desc: 'Ērts risinājums makšķerēšanas piederumu un nozvejas transportēšanai uz ziemas makšķerēšanu.',
+    desc: 'Ērts risinājums ziemas makšķerēšanas piederumu un nozvejas transportēšanai.',
   },
   {
     icon: (
@@ -41,7 +41,7 @@ const cases = [
       </svg>
     ),
     title: 'Mežistrādei',
-    desc: 'Ideāli darbam starp kokiem, celmiem un akmeņiem — tur, kur treileri nevar tikt.',
+    desc: 'Ideāli darbam starp kokiem, celmiem un akmeņiem — baļķu izvešanai, berammalkas jeb bluķu transportēšanai.',
   },
   {
     icon: (
@@ -50,7 +50,7 @@ const cases = [
       </svg>
     ),
     title: 'Ekspedīcijām',
-    desc: 'Uzticams pavadonis ilgstošās ekspedīcijās aukstā klimatā. Izturīgs no +40°C līdz −40°C.',
+    desc: 'Uzticams pavadonis ilgstošās ekspedīcijās aukstā jeb karstā klimatā. Izturīgs no +40°C līdz −40°C.',
   },
   {
     icon: (
@@ -76,7 +76,7 @@ export default function UseCases() {
           transition={{ duration: 0.65 }}
         >
           <span className="section-label">Pielietojums</span>
-          <h2 className="section-title">Kur noderēs Canada Pulkan?</h2>
+          <h2 className="section-title">Kur noderēs Canada apvidus ragavas?</h2>
           <p className="section-subtitle">
             Izstrādātas skarbajai dabai — ragavas, kas darbojas jebkurā vidē un reljefā.
           </p>

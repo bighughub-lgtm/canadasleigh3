@@ -137,7 +137,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <span className="hero-label">Officiālais izplatītājs Baltijā</span>
+          <span className="hero-label">VS HOME Officiālais izplatītājs Baltijā</span>
         </motion.div>
 
         <motion.h1
@@ -146,7 +146,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          Canada Pulkan<br />
+          Canada<br />
           <span className="hero-title-accent">Apvidus Ragavas</span>
         </motion.h1>
 

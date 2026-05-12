@@ -4,10 +4,10 @@ import { motion } from 'framer-motion'
 const benefits = [
   'Neplaisā atsitoties pret akmeņiem un var izturēt auto pārbraukšanu pāri tām',
   'Izlokās starp kokiem, celmiem un akmeņiem — ideāli bezceļa apstākļiem',
-  'Darbojas gan stiprā aukstumā, gan siltākā laikā — HD polietilēns visu gadu',
-  'Viegli kopjamas — neabsorbē mitrumu, smakas vai netīrumus, nav rūsas',
-  'Higiēniskāka medījuma transportēšana — nesasmērē, saglabā gaļu svaigu',
-  'Noderīgas arī baļķiem, lauksaimniecības produktiem un kā nestuves ārkārtās',
+  'Darbojas gan stiprā aukstumā, gan karstā laikā — visu gadu',
+  'Viegli kopjamas — neabsorbē mitrumu, smakas vai netīrumus',
+  'Higiēniskāka medījuma transportēšana — nesasmērē, saglabā gaļu tīru',
+  'Noderīgas arī baļķiem, lauksaimniecības produktiem un kā nestuves ārkārtās situācijās',
 ]
 
 export default function Benefits() {
@@ -23,7 +23,7 @@ export default function Benefits() {
             transition={{ duration: 0.7 }}
           >
             <span className="section-label">Priekšrocības</span>
-            <h2 className="section-title">Kāpēc izvēlēties Canada Pulkan?</h2>
+            <h2 className="section-title">Kāpēc izvēlēties Canada apvidus ragavas?</h2>
             <p className="section-subtitle" style={{ marginBottom: 36 }}>
               Gadiem testētas Skandināvijas kalnainajos apvidos — ragavas, kas kalpos
               tikpat ilgi, cik pareizi tās lieto.
@@ -64,7 +64,7 @@ export default function Benefits() {
             />
             <div className="benefits-badge">
               <span className="benefits-badge-label">Medību sezona</span>
-              <strong>Gatavs jebkurā brīdī</strong>
+              <strong>Canada apvidus ragavas lietošanā</strong>
             </div>
           </motion.div>
         </div>

@@ -6,33 +6,33 @@ const models = [
   {
     id: 'compact',
     tabLabel: 'KOMPAKTS',
-    name: 'TERRAINSLEIGH CANADA COMPACT',
+    name: 'CANADA COMPACT',
     spec: '1.4 x 0.65 m · 5 kg',
     image: '/mazasragavas.jpg',
-    alt: 'TERRAINSLEIGH CANADA COMPACT ragavas',
+    alt: 'CANADA COMPACT ragavas',
   },
   {
     id: 'classic',
     tabLabel: 'SLODZEI',
-    name: 'TERRAINSLEIGH CANADA CLASSIC',
+    name: 'CANADA CLASSIC',
     spec: '2.33 x 0.85 m · 14 kg',
     image: '/canadaplukan.jpg',
-    alt: 'TERRAINSLEIGH CANADA CLASSIC ragavas',
+    alt: 'CANADA CLASSIC ragavas',
   },
   {
     id: 'classic-open',
     tabLabel: 'ATVĒRTAIS',
-    name: 'TERRAINSLEIGH CANADA CLASSIC OPEN',
+    name: 'CANADA CLASSIC OPEN',
     spec: '2.33 x 0.85 m · 14 kg',
     image: '/ragavasbig.png',
-    alt: 'TERRAINSLEIGH CANADA CLASSIC OPEN ragavas',
+    alt: 'CANADA CLASSIC OPEN ragavas',
   },
 ]
 
 const features = [
   { label: 'Materiāls', value: 'HD polietilēns (HDPE)' },
   { label: 'Temperatūra', value: 'No −40°C līdz +40°C' },
-  { label: 'Savietojamība', value: 'ATV, sniega motocikls, zirgs, rokas vilkšana' },
+  { label: 'Savietojamība', value: 'ATV, sniega motocikls, rokas vilkšana' },
   { label: 'Kopšana', value: 'Vienkārša — neabsorbē mitrumu vai smakas' },
   { label: 'Lietojums', value: 'Visu gadu — ziemā un vasarā' },
   { label: 'Ražots', value: 'Zviedrijā' },
@@ -114,9 +114,7 @@ export default function ProductOverview() {
             <span className="section-label">Produkta pārskats</span>
             <h2 className="section-title">Testētas Skandināvijā. Ražotas Zviedrijā.</h2>
             <p className="section-subtitle product-overview-subtitle">
-              Canada Pulkan ragavas ir izgatavotas no īpaša HD polietilēna. Materiāls ir gan
-              elastīgs, gan triecienizturīgs, tādēļ ragavas neplaisā atsitoties pret akmeņiem
-              un saglabā savu formu arī pie smagas slodzes.
+              Canada apvidus ragavas ir izgatavotas no īpaša HD polietilēna. Materiāls ir gan elastīgs, gan triecienizturīgs, tādēļ ragavas neplaisā atsitoties pret akmeņiem un saglabā savu formu arī pie smagas slodzes.
             </p>
 
             <div className="overview-features">

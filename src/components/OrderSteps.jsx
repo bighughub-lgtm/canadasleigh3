@@ -10,7 +10,7 @@ const steps = [
   {
     num: '02',
     title: 'Noformējiet pasūtījumu',
-    desc: 'Spiediet “Pirkt” un veiciet apmaksu tiešsaistē ar Stripe, vai sazinieties ar mums pa tālruni, ja vēlaties pasūtīt tieši un precizēt detaļas.',
+    desc: 'Spiediet "Pirkt" un veiciet apmaksu tiešsaistē ar Stripe, vai sazinieties ar mums pa tālruni, ja vēlaties pasūtīt tieši un precizēt detaļas.',
   },
   {
     num: '03',

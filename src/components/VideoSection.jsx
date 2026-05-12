@@ -169,7 +169,7 @@ export default function VideoSection() {
           <span className="section-label">Videoklipi</span>
           <h2 className="section-title">Skaties ragavas darbībā</h2>
           <p className="section-subtitle">
-            Reāli video no lauka — kā Canada Pulkan ragavas darbojas skarbajos apstākļos.
+            Reāli video no lauka — kā Canada apvidus ragavas darbojas skarbajos apstākļos.
           </p>
         </motion.div>
 

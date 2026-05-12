@@ -131,8 +131,7 @@ export default function Gallery() {
           <span className="section-label">Galerija</span>
           <h2 className="section-title">Atlasīta izlase no reālas lietošanas</h2>
           <p className="section-subtitle">
-            Īss, kurēts ieskats tajos brīžos, kuros Canada Pulkan sevi pierāda bezceļā,
-            mežā un smagumu pārvietošanā.
+            Īss ieskats brīžos, kuros Canada apvidus ragavas sevi pierāda bezceļa un mežā apstākļos.
           </p>
         </motion.div>
 
