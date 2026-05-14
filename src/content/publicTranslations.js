@@ -231,7 +231,7 @@ export const translations = {
             'Viegli kopjamas',
             'Piemērotas neliela un vidēja izmēra medījumiem un aprīkojumam',
           ],
-          buyUrl: 'https://buy.stripe.com/8x2eV7cZx8dAfCxaJy6Vq00',
+          buyUrl: 'https://buy.stripe.com/3cI6oB5x53Xk2PL2d26Vq03',
           media: [
             { id: 'sm1', type: 'image', src: '/sm1.jpeg', thumb: '/sm1.jpeg', alt: 'TERRAINSLEIGH CANADA COMPACT ragavas no sāna', label: 'Kompaktais modelis darbībā' },
             { id: 'sm2', type: 'image', src: '/sm2.jpeg', thumb: '/sm2.jpeg', alt: 'TERRAINSLEIGH CANADA COMPACT ragavas mežā', label: 'Forma un dziļums smagai vilkšanai' },
@@ -282,7 +282,7 @@ export const translations = {
             'Vienlaicīgi līdz 2 lieliem alņiem',
             'Piemērots liela izmēra medījumiem, aprīkojumam un beramām kravām',
           ],
-          buyUrl: 'https://buy.stripe.com/14A3cpgbJ8dA8a5cRG6Vq01',
+          buyUrl: 'https://buy.stripe.com/7sYbIV6B9dxUeyt04U6Vq04',
           media: [
             { id: 'b1', type: 'image', src: '/b1.jpeg', thumb: '/b1.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC ragavas darbībā', label: 'Pilnā izmēra korpuss smagām slodzēm' },
             { id: 'b2', type: 'image', src: '/b2.jpeg', thumb: '/b2.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC ragavas meža apvidū', label: 'Stabila vilkšana sarežģītā apvidū' },
@@ -331,7 +331,7 @@ export const translations = {
             '8 mm HD polietilēns',
             'Piemērots liela izmēra medījumiem, aprīkojumam un baļķu vilkšanai',
           ],
-          buyUrl: 'https://buy.stripe.com/cNi5kxcZx0L88a5dVK6Vq02',
+          buyUrl: 'https://buy.stripe.com/7sY00de3B51o3TPaJy6Vq05',
           media: [
             { id: 'a1', type: 'image', src: '/a1.jpeg', thumb: '/a1.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC OPEN ragavas darbībā', label: 'Atvērtais modelis ar plašu kravēšanas laukumu' },
             { id: 'a2', type: 'image', src: '/a2.jpeg', thumb: '/a2.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC OPEN ragavas bezceļu apstākļos', label: 'Viegla piekļuve aprīkojumam un medījumam' },
@@ -802,7 +802,7 @@ export const translations = {
           tagFeatured: true,
           summary: 'A light, reliable model for hunters and winter anglers who need compact, durable sleds for off-road conditions.',
           features: ['Made in Sweden', '8 mm HD polyethylene', 'Easy to clean', 'Suitable for small and medium game and equipment'],
-          buyUrl: 'https://buy.stripe.com/8x2eV7cZx8dAfCxaJy6Vq00',
+          buyUrl: 'https://buy.stripe.com/3cI6oB5x53Xk2PL2d26Vq03',
           media: [
             { id: 'sm1', type: 'image', src: '/sm1.jpeg', thumb: '/sm1.jpeg', alt: 'TERRAINSLEIGH CANADA COMPACT sled from the side', label: 'Compact model in use' },
             { id: 'sm2', type: 'image', src: '/sm2.jpeg', thumb: '/sm2.jpeg', alt: 'TERRAINSLEIGH CANADA COMPACT sled in the forest', label: 'Shape and depth for heavy pulling' },
@@ -848,7 +848,7 @@ export const translations = {
           tagFeatured: false,
           summary: 'A full-size model with a rear end wall for large game and heavy equipment when maximum capacity, flexibility and stable off-road pulling are needed.',
           features: ['Made in Sweden', '8 mm HD polyethylene', 'Up to 2 large moose at once', 'Suitable for large game, equipment and loose loads'],
-          buyUrl: 'https://buy.stripe.com/14A3cpgbJ8dA8a5cRG6Vq01',
+          buyUrl: 'https://buy.stripe.com/7sYbIV6B9dxUeyt04U6Vq04',
           media: [
             { id: 'b1', type: 'image', src: '/b1.jpeg', thumb: '/b1.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC sled in use', label: 'Full-size body for heavy loads' },
             { id: 'b2', type: 'image', src: '/b2.jpeg', thumb: '/b2.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC sled in forest terrain', label: 'Stable pulling across difficult terrain' },
@@ -892,7 +892,7 @@ export const translations = {
           tagFeatured: false,
           summary: 'A full-size model without a rear end wall for large game and bulky loads, with the same off-road durability, flexibility and pulling quality.',
           features: ['Made in Sweden', 'No rear end wall', '8 mm HD polyethylene', 'Suitable for large game, equipment and log pulling'],
-          buyUrl: 'https://buy.stripe.com/cNi5kxcZx0L88a5dVK6Vq02',
+          buyUrl: 'https://buy.stripe.com/7sY00de3B51o3TPaJy6Vq05',
           media: [
             { id: 'a1', type: 'image', src: '/a1.jpeg', thumb: '/a1.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC OPEN sled in use', label: 'Open model with a wide loading area' },
             { id: 'a2', type: 'image', src: '/a2.jpeg', thumb: '/a2.jpeg', alt: 'TERRAINSLEIGH CANADA CLASSIC OPEN sled in off-road conditions', label: 'Easy access to equipment and game' },
@@ -1360,7 +1360,7 @@ export const translations = {
           tagFeatured: true,
           summary: 'Лёгкая и надёжная модель для охотников и зимних рыболовов, которым нужны компактные и прочные сани для бездорожья.',
           features: ['Произведено в Швеции', '8 мм HD полиэтилен', 'Легко очищаются', 'Подходят для небольшой и средней добычи, а также снаряжения'],
-          buyUrl: 'https://buy.stripe.com/8x2eV7cZx8dAfCxaJy6Vq00',
+          buyUrl: 'https://buy.stripe.com/3cI6oB5x53Xk2PL2d26Vq03',
           media: [
             { id: 'sm1', type: 'image', src: '/sm1.jpeg', thumb: '/sm1.jpeg', alt: 'Сани TERRAINSLEIGH CANADA COMPACT сбоку', label: 'Компактная модель в работе' },
             { id: 'sm2', type: 'image', src: '/sm2.jpeg', thumb: '/sm2.jpeg', alt: 'Сани TERRAINSLEIGH CANADA COMPACT в лесу', label: 'Форма и глубина для тяжёлой тяги' },
@@ -1406,7 +1406,7 @@ export const translations = {
           tagFeatured: false,
           summary: 'Полноразмерная модель с задним бортом для крупной добычи и тяжёлого снаряжения, когда нужна максимальная вместимость, гибкость и стабильная тяга на бездорожье.',
           features: ['Произведено в Швеции', '8 мм HD полиэтилен', 'До 2 крупных лосей одновременно', 'Подходит для крупной добычи, снаряжения и сыпучих грузов'],
-          buyUrl: 'https://buy.stripe.com/14A3cpgbJ8dA8a5cRG6Vq01',
+          buyUrl: 'https://buy.stripe.com/7sYbIV6B9dxUeyt04U6Vq04',
           media: [
             { id: 'b1', type: 'image', src: '/b1.jpeg', thumb: '/b1.jpeg', alt: 'Сани TERRAINSLEIGH CANADA CLASSIC в работе', label: 'Полноразмерный корпус для тяжёлых грузов' },
             { id: 'b2', type: 'image', src: '/b2.jpeg', thumb: '/b2.jpeg', alt: 'Сани TERRAINSLEIGH CANADA CLASSIC на лесном рельефе', label: 'Стабильная тяга на сложном рельефе' },
@@ -1450,7 +1450,7 @@ export const translations = {
           tagFeatured: false,
           summary: 'Полноразмерная модель без заднего борта для крупной добычи и объёмных грузов с той же прочностью, гибкостью и качеством тяги на бездорожье.',
           features: ['Произведено в Швеции', 'Без заднего борта', '8 мм HD полиэтилен', 'Подходит для крупной добычи, снаряжения и перевозки брёвен'],
-          buyUrl: 'https://buy.stripe.com/cNi5kxcZx0L88a5dVK6Vq02',
+          buyUrl: 'https://buy.stripe.com/7sY00de3B51o3TPaJy6Vq05',
           media: [
             { id: 'a1', type: 'image', src: '/a1.jpeg', thumb: '/a1.jpeg', alt: 'Сани TERRAINSLEIGH CANADA CLASSIC OPEN в работе', label: 'Открытая модель с широкой зоной загрузки' },
             { id: 'a2', type: 'image', src: '/a2.jpeg', thumb: '/a2.jpeg', alt: 'Сани TERRAINSLEIGH CANADA CLASSIC OPEN в условиях бездорожья', label: 'Удобный доступ к снаряжению и добыче' },
