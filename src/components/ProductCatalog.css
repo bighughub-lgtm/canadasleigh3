@@ -78,6 +78,7 @@
 }
 
 .catalog-image {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 11;
   overflow: hidden;
@@ -95,6 +96,23 @@
 
 .catalog-card:hover .catalog-image img {
   transform: scale(1.03);
+}
+
+.catalog-image .catalog-model-logo {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 1;
+  width: 26%;
+  max-width: 112px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  transition: none;
+}
+
+.catalog-card:hover .catalog-image .catalog-model-logo {
+  transform: none;
 }
 
 .catalog-body {

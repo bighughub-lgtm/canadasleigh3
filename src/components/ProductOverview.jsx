@@ -4,6 +4,13 @@ import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
 import { useLocale } from '../lib/publicI18n.jsx'
 
+// Model logos for the dark overview panel (white text variant)
+const OVERVIEW_MODEL_LOGOS = {
+  compact: '/canada-compact-logo-dark.svg',
+  classic: '/canada-classic-logo-dark.svg',
+  'classic-open': '/canada-classic-logo-dark.svg',
+}
+
 export default function ProductOverview() {
   const { text } = useLocale()
   const overview = text.productOverview
@@ -61,6 +68,15 @@ export default function ProductOverview() {
                   <span className="overview-model-kicker">{overview.modelKicker}</span>
                   <div className="overview-model-name">{activeModel.name}</div>
                   <p>{activeModel.spec}</p>
+                  {OVERVIEW_MODEL_LOGOS[activeModel.id] ? (
+                    <img
+                      className="overview-model-logo"
+                      src={OVERVIEW_MODEL_LOGOS[activeModel.id]}
+                      alt=""
+                      aria-hidden="true"
+                      decoding="async"
+                    />
+                  ) : null}
                 </div>
 
                 <div className="overview-logo-badge">

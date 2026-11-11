@@ -37,6 +37,13 @@
   min-width: 0;
 }
 
+.overview-model-logo {
+  display: block;
+  height: 44px;
+  width: auto;
+  margin-top: 12px;
+}
+
 .overview-model-kicker {
   display: inline-flex;
   align-items: center;
@@ -152,7 +159,7 @@
 }
 
 .overview-main-img--compact {
-  width: min(100%, 520px);
+  width: min(100%, 610px);
 }
 
 .overview-main-img--classic {
@@ -216,7 +223,7 @@
   }
 
   .overview-main-img--compact {
-    width: 96%;
+    width: 108%;
   }
 
   .overview-main-img--classic {
@@ -254,7 +261,7 @@
   }
 
   .overview-main-img--compact {
-    width: 98%;
+    width: 110%;
   }
 
   .overview-main-img--classic {
@@ -303,6 +310,11 @@
 
   .overview-model-meta p {
     text-align: center;
+  }
+
+  .overview-model-logo {
+    height: 40px;
+    margin-top: 10px;
   }
 
   .overview-logo-badge {

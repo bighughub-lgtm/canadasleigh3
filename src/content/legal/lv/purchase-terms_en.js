@@ -37,7 +37,7 @@ const purchaseTermsEN = {
     {
       heading: '3. Goods and information about goods',
       paragraphs: [
-        'The website offers Canada Pulkan off-road sleds and related information, including:',
+        'The website offers Canada Pulkan off-road sleighs and related information, including:',
       ],
       list: [
         'models;',

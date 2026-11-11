@@ -5,6 +5,13 @@ import { getActiveMedia } from '../lib/cmsApi'
 import { useImageSlot } from '../lib/useImageSlot'
 import { pickLocalizedField, useLocale } from '../lib/publicI18n.jsx'
 
+// Model logos shown on the white product image area of each card
+const MODEL_LOGOS = {
+  compact: '/canada-compact-logo.svg',
+  classic: '/canada-classic-logo.svg',
+  'classic-open': '/canada-classic-logo.svg',
+}
+
 const initialActiveMedia = {
   compact: 'sm1',
   classic: 'b1',
@@ -703,6 +710,16 @@ export default function ProductCatalog() {
                     loading="lazy"
                     decoding="async"
                   />
+                  {MODEL_LOGOS[product.id] ? (
+                    <img
+                      className="catalog-model-logo"
+                      src={MODEL_LOGOS[product.id]}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : null}
                 </div>
 
                 <div className="catalog-body">

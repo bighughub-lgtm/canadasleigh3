@@ -88,7 +88,7 @@ const deliveryReturnsEN = {
       heading: '7. Return of goods after withdrawal',
       paragraphs: [
         'After notifying withdrawal, the goods must be returned to the seller in accordance with the procedure established by applicable laws and regulations. PTAC has explained that the consumer is obliged to return the goods to the seller within 14 days after sending the written withdrawal. (ptac.gov.lv)',
-        'Because Canada Pulkan sleds may be large-size goods, before returning them please contact us without fail to agree on:',
+        'Because Canada Pulkan sleighs may be large-size goods, before returning them please contact us without fail to agree on:',
       ],
       list: [
         'the return address;',

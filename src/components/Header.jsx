@@ -76,7 +76,7 @@ export default function Header() {
       <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
         <div className="header-inner container">
           <a href="/" className="header-logo">
-            <img src="/logopng2.png" alt="Canada Pulkan" />
+            <img src="/canada-sleigh-logo.svg" alt="Canada Sleigh" />
           </a>
 
           <nav className="header-nav">
@@ -169,7 +169,7 @@ export default function Header() {
           >
             <div className="mm-top">
               <a href="/" className="mm-logo" onClick={closeMenu}>
-                <img src="/logopng2.png" alt="Canada Pulkan" />
+                <img src="/canada-sleigh-logo.svg" alt="Canada Sleigh" />
               </a>
               <button
                 className="mm-close"

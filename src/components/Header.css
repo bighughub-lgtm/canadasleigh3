@@ -29,7 +29,7 @@
 }
 
 .header-logo img {
-  height: 36px;
+  height: 52px;
   width: auto;
   display: block;
 }
@@ -267,7 +267,7 @@
 }
 
 .mm-logo img {
-  height: 32px;
+  height: 46px;
   width: auto;
   display: block;
 }
@@ -491,6 +491,10 @@
     justify-content: space-between;
     height: 70px;
     gap: 24px;
+  }
+
+  .header-logo img {
+    height: 48px;
   }
 
   .header-nav {
