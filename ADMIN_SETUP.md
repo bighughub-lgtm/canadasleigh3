@@ -1,81 +1,64 @@
-# Admin CMS Setup
+# Admin CMS Setup (Cloudflare)
 
-This admin panel is a small CMS for public website texts, gallery images, product gallery images, video links, and fixed section image slots. It does not edit product prices, checkout/payment links, legal document bodies, or product media paths.
+The admin panel at `/admin` is a small CMS for public website texts, gallery images, product gallery images, video links and fixed section image slots. It does not edit product prices, checkout/payment links, legal document bodies or product media paths.
 
-The admin UI uses only LV, EN, and RU fields. Older LT/EST database columns can remain in Supabase, but they are not shown to the client.
+Everything runs on Cloudflare. There is no Supabase and no Cloudinary anymore.
 
-## Frontend Environment
+| Part | Where it lives |
+| --- | --- |
+| Website (React + Vite) | Cloudflare Pages project `canadasleigh3` (auto-deploys from GitHub `main`) |
+| API (`/api/*`) | Pages Functions: `functions/api/[[route]].js` → `server/api.js` |
+| Image files (`/media/*`) | R2 bucket `canadasleigh-media`, binding `MEDIA`, served by `functions/media/[[path]].js` |
+| Content + admin accounts | D1 database `canadasleigh-cms`, binding `DB` |
 
-Create `.env.local` locally:
+The admin UI uses only LV, EN and RU fields. Older LT/EST columns exist in the tables but are not shown to the client.
 
-```bash
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+## Cloudflare bindings
+
+Pages project → Settings → Bindings (set for both Production and Preview):
+
+```text
+DB     D1 database  canadasleigh-cms
+MEDIA  R2 bucket    canadasleigh-media
 ```
 
-Do not commit `.env.local`.
+No environment variables or secrets are needed. The bucket stays private; images are served through `/media/...`.
 
-## Cloudflare Pages Environment
+## Database
 
-Add these variables in Cloudflare Pages project settings:
+The schema is in `server/schema.js` (idempotent `CREATE TABLE IF NOT EXISTS`). Tables:
 
-```bash
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
+```text
+site_media            gallery images, product gallery images, fixed image slots
+site_videos           video links, titles, descriptions, thumbnails
+site_texts            optional public text overrides
+admin_users           admin accounts (email + PBKDF2 password hash)
+admin_sessions        login sessions (only a SHA-256 of the cookie token is stored)
+admin_setup_tokens    one-time invitation links for creating an account
+admin_login_attempts  failed-login counter (10 failures per 15 min per IP)
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` and `CLOUDINARY_API_SECRET` must stay server-side only. They are used only by `functions/api/cloudinary-signature.js`.
+## Admin accounts
 
-## Supabase Setup
+There is no public sign-up. A new admin account is created from a one-time invitation link:
 
-1. Open Supabase SQL Editor.
-2. Run `supabase/admin_cms_schema.sql`.
-3. Run `supabase/admin_cms_seed_existing_content.sql`.
-4. Create the first admin user in Supabase Authentication with email and password.
-5. Add that user to `public.admin_users` by running:
-
-```sql
-insert into public.admin_users (user_id, email)
-select id, email
-from auth.users
-where email = 'client@example.com'
-on conflict (user_id) do update set email = excluded.email;
+```text
+https://canadasleigh.com/admin/setup#<token>
 ```
 
-Replace `client@example.com` with the actual admin email.
+The person opens the link, enters their e-mail and chooses a password (at least 10 characters). The link works once and expires after 14 days. Only the SHA-256 of the token is stored in `admin_setup_tokens`.
 
-`supabase/admin_cms_schema.sql` creates the CMS tables, indexes, triggers, and security policies. It now includes the `public.site_texts` table for optional public website text overrides, so run this schema once after pulling this update. `supabase/admin_cms_seed_existing_content.sql` imports the current existing website gallery images, product detail gallery images, product overview images, video list, and landing section image slots into the admin panel.
+To create a new invitation link (for a new person or a forgotten password), insert a new token hash into `admin_setup_tokens` with the D1 console. A forgotten-password account can be removed from `admin_users` first.
 
-After pulling or deploying updates to this media model, run `supabase/admin_cms_seed_existing_content.sql` again. The seed is safe to rerun and adds missing rows without duplicating existing gallery URLs or single image slots. It also fills missing EN/RU public media titles, alt text, and video descriptions for seeded rows without overwriting existing non-empty translations. This update adds the explicit product overview slots listed below.
-
-If the seed file is not run, the public website still works because it keeps the hardcoded fallback content, but the admin panel will look empty until media is imported or uploaded.
-
-Text overrides do not require a seed. `/admin` shows the editable text list from the code definitions even when `public.site_texts` is empty. When a row is missing or a text is reset, the public site falls back to `src/content/publicTranslations.js`.
+Login sessions last 7 days in an HttpOnly, Secure, SameSite=Strict cookie. All state-changing API calls also check that the request comes from the same site.
 
 ## Admin Content Model
 
-Public website texts are managed in `Teksti`. The client can edit LV, EN, and RU values for safe public text keys such as headings, labels, CTA text, FAQ answers, cookie banner text, and legal page UI labels. Each row can be saved individually or restored to the code default.
+Public website texts are managed in `Teksti`. The client can edit LV, EN and RU values for safe public text keys. Each row can be saved or restored to the code default. When a row is missing or reset, the site uses `src/content/publicTranslations.js`.
 
-The text CMS intentionally does not edit:
+Main gallery images are a many-image list in `Galerija` (upload, replace, hide/show, delete, move up/down; order is normalized automatically).
 
-```text
-product prices
-Stripe/payment buy links
-product media paths
-Cloudinary folders
-legal document body files
-function-generated dynamic strings
-```
-
-For the text group map and fallback rules, see `ADMIN_TEXT_CMS_MAP.md`.
-
-Main gallery images are a many-image list in `Galerija`. The client can upload images, replace an existing image, hide/show items, delete them, and move them up or down. The admin panel keeps the order normalized automatically, so the client does not need to edit order numbers.
-
-Product gallery images are managed separately in `Produktu galerijas`. These are the images shown inside each product's `Pilna informācija` media viewer:
+Product gallery images are managed in `Produktu galerijas`:
 
 ```text
 product_compact_gallery
@@ -83,11 +66,9 @@ product_classic_gallery
 product_classic_open_gallery
 ```
 
-Each product gallery can contain many images. Uploading there adds a new image to that product gallery, while `Nomainīt attēlu` replaces one existing row.
+Videos are editable links. YouTube URLs and local public video paths are supported.
 
-Videos are editable links. YouTube URLs and local public video paths are supported. The client can update LV/EN/RU titles and descriptions, optionally add a thumbnail URL, hide/show videos, and move them up or down.
-
-Section images are fixed slots, not a gallery. Uploading to a slot replaces that slot image instead of creating several competing active images. Current slots are:
+Section images are fixed slots, not a gallery. Uploading to a slot replaces that slot image. Slots:
 
 ```text
 hero
@@ -104,60 +85,19 @@ contact
 partners
 ```
 
-The old `product_overview` slot can remain in Supabase as a legacy fallback, but the admin UI now uses the three explicit overview slots. These slots are grouped in the admin as `Lapas sadaļas`, `Produktu pārskats`, and `Produktu kartītes`.
+Uploaded files go to R2 under `uploads/<gallery|sections|product-galleries>/<year>/<uuid>.<ext>` (JPG, PNG, WEBP, AVIF or GIF, max 20 MB). Deleting an entry in the admin removes it from the list; the file stays in R2.
 
-The seed imports the current public images/videos into these admin tables. If a CMS row is missing or Supabase is unavailable, the public page still uses its local fallback image/video content.
+If the CMS has no row for something, or the API is unreachable, the public site keeps its hardcoded fallback content. See `ADMIN_MEDIA_MAP.md` and `ADMIN_TEXT_CMS_MAP.md`.
 
-For a complete media map, see `ADMIN_MEDIA_MAP.md`.
-
-## Cloudinary Setup
-
-Use one Cloudinary account for image storage. The signed upload endpoint automatically uses:
-
-```text
-canadasleigh/gallery
-canadasleigh/sections
-```
-
-No Cloudinary secret is exposed to the browser.
-
-## Local Testing
-
-1. Add `.env.local` with the frontend Supabase variables.
-2. Run:
+## Local development
 
 ```bash
-npm run dev
+npm run build
+npx wrangler pages dev dist --d1 DB=local-cms --r2 MEDIA=local-media
 ```
 
-3. Open `/admin/login`.
-4. Log in with the Supabase Auth admin user.
-5. Replace the Partners image in `Sadaļu bildes`.
-6. Replace the About image in `Sadaļu bildes`.
-7. Replace one image under `Produktu pārskats` and confirm the matching ProductOverview tab changes.
-8. Replace one product card image in `Sadaļu bildes`.
-9. Add one COMPACT product detail image in `Produktu galerijas`.
-10. Move product gallery images up/down and confirm the product detail media order changes.
-11. Add one main gallery image in `Galerija`.
-12. Move main gallery images up/down and confirm the public gallery order changes.
-13. Add one video link.
-14. Open `Teksti`, edit one public heading in LV/EN/RU, save it, and confirm the public page updates after reload or language switch.
-15. Restore that text to noklusējums and confirm the public page falls back to the static translation.
-16. Check the public page and confirm fallbacks still work when no CMS data exists.
+`npm run dev` (Vite only) shows the site with fallback content, because the `/api` functions are not running there.
 
-For local testing of signed image uploads, run the site through Cloudflare Pages Functions tooling or test on a Cloudflare Pages preview deployment with the server-side environment variables configured.
+## Move from Supabase (November 2026)
 
-## Production Testing
-
-1. Deploy to Cloudflare Pages.
-2. Confirm all Cloudflare Pages environment variables are set.
-3. Open `/admin/login`.
-4. Upload one gallery image and one Partners section image.
-5. Check the public homepage:
-   - Gallery uses active uploaded images when available.
-   - Product detail galleries use active uploaded images when available.
-   - ProductOverview tabs use the matching `product_overview_*` image when available.
-   - Video section uses active uploaded video links when available.
-   - Partners section image uses the active `partners` section image when available.
-   - Edited rows in `Teksti` override public LV/EN/RU static text.
-   - If no active CMS items exist, the site falls back to the existing hardcoded content.
+Content was copied once from the old Supabase project with `server/migrate.js` (`POST /api/migrate/import`, protected by a one-time key). Images that were on Cloudinary were copied to R2 under `migrated/`. English alt texts and video texts were changed from "sled" to "sleigh" during the move. Rows that were hidden in the old admin were not visible to the public read API and were not copied.

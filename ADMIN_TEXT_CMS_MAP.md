@@ -1,13 +1,13 @@
 # Admin Text CMS Map
 
-The public text CMS adds optional Supabase overrides on top of `src/content/publicTranslations.js`.
+The public text CMS adds optional overrides (Cloudflare D1 table `site_texts`) on top of `src/content/publicTranslations.js`.
 
 ## Fallback Logic
 
 1. The public site renders static LV/EN/RU translations from code immediately.
-2. The browser loads active rows from `public.site_texts`.
+2. The browser loads active rows from `/api/cms/texts` (D1 table `site_texts`).
 3. If `value_lv`, `value_en`, or `value_ru` exists for the current locale, that string replaces the matching static text key.
-4. If a row is missing, inactive, reset to default, has no saved value for that locale, or Supabase is unavailable, the static translation remains visible.
+4. If a row is missing, inactive, reset to default, has no saved value for that locale, or the API is unavailable, the static translation remains visible.
 
 Only string leaf values are overridden. Objects, arrays, and JavaScript functions stay in code.
 
@@ -83,14 +83,14 @@ Stripe/payment buy URLs
 checkout/payment logic
 image, video, thumbnail, poster, and media paths
 href/mailto/tel link targets
-Cloudinary folders and upload logic
-Supabase table/column names
+R2 storage keys and upload logic
+D1 table/column names
 legal document body source files
 dynamic function-generated strings
 ```
 
 Skipped dynamic functions include strings such as gallery counts and footer copyright year formatting. They remain in `src/content/publicTranslations.js` so existing call sites keep working.
 
-## Supabase Notes
+## Database Notes
 
-Run `supabase/admin_cms_schema.sql` once after this feature is deployed. It creates `public.site_texts`, the update trigger, and RLS policies. No seed is required for texts because the admin screen builds its editable list from the code definitions and only saves changed rows.
+The `site_texts` table is created by `server/schema.js`. No seed is required for texts because the admin screen builds its editable list from the code definitions and only saves changed rows.

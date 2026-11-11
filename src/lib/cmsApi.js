@@ -1,65 +1,6 @@
-import { supabase, supabaseConfigured } from './supabaseClient'
-
-const MEDIA_COLUMNS = [
-  'id',
-  'section',
-  'title_lv',
-  'title_en',
-  'title_ru',
-  'title_lt',
-  'title_est',
-  'alt_lv',
-  'alt_en',
-  'alt_ru',
-  'alt_lt',
-  'alt_est',
-  'url',
-  'cloudinary_public_id',
-  'width',
-  'height',
-  'format',
-  'sort_order',
-  'is_active',
-  'created_at',
-  'updated_at',
-].join(',')
-
-const VIDEO_COLUMNS = [
-  'id',
-  'title_lv',
-  'title_en',
-  'title_ru',
-  'title_lt',
-  'title_est',
-  'description_lv',
-  'description_en',
-  'description_ru',
-  'description_lt',
-  'description_est',
-  'video_url',
-  'thumbnail_url',
-  'sort_order',
-  'is_active',
-  'created_at',
-  'updated_at',
-].join(',')
-
-const TEXT_COLUMNS = [
-  'text_key',
-  'group_id',
-  'label_lv',
-  'description_lv',
-  'input_type',
-  'value_lv',
-  'value_en',
-  'value_ru',
-  'default_lv',
-  'default_en',
-  'default_ru',
-  'is_active',
-  'created_at',
-  'updated_at',
-].join(',')
+// CMS data access. Content lives in Cloudflare D1 behind the site's own /api endpoints
+// (Pages Functions in /functions + /server). Public reads never throw: on any error the
+// site keeps its built-in fallback content.
 
 function safeArray(data) {
   return Array.isArray(data) ? data : []
@@ -78,36 +19,55 @@ function normalizeOrderLocally(items) {
     .map((item, index) => ({ ...item, sort_order: index + 1 }))
 }
 
-async function runUpdates(updates) {
-  const results = await Promise.all(updates)
-  const failed = results.find((result) => result?.error)
-  if (failed?.error) throw failed.error
-}
-
-function ensureClient() {
-  if (!supabaseConfigured || !supabase) {
-    throw new Error('Supabase nav nokonfigurēts.')
-  }
-  return supabase
-}
-
-export async function getActiveMedia(section) {
-  if (!supabaseConfigured || !supabase) return []
-
+async function fetchPublicList(url) {
   try {
-    const { data, error } = await supabase
-      .from('site_media')
-      .select(MEDIA_COLUMNS)
-      .eq('section', section)
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true })
-
-    if (error) return []
-    return safeArray(data)
+    const response = await fetch(url, { headers: { Accept: 'application/json' } })
+    if (!response.ok) return []
+    const data = await response.json()
+    return safeArray(data?.items)
   } catch {
     return []
   }
+}
+
+async function adminRequest(method, path, body) {
+  const options = {
+    method,
+    credentials: 'same-origin',
+    headers: { Accept: 'application/json' },
+  }
+
+  if (body !== undefined) {
+    options.headers['Content-Type'] = 'application/json'
+    options.body = JSON.stringify(body)
+  }
+
+  let response
+  try {
+    response = await fetch(path, options)
+  } catch {
+    throw new Error('Nav savienojuma ar serveri. Pārbaudiet internetu un mēģiniet vēlreiz.')
+  }
+
+  const data = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    const error = new Error(data?.error || 'Darbība neizdevās. Mēģiniet vēlreiz.')
+    error.status = response.status
+    throw error
+  }
+
+  return data
+}
+
+// ---------- Public site ----------
+
+let activeMediaPromise = null
+
+export async function getActiveMedia(section) {
+  if (!activeMediaPromise) activeMediaPromise = fetchPublicList('/api/cms/media')
+  const items = await activeMediaPromise
+  return items.filter((item) => item.section === section)
 }
 
 export async function getSectionImage(section) {
@@ -120,99 +80,83 @@ export async function getImageSlot(slotId) {
 }
 
 export async function getActiveVideos() {
-  if (!supabaseConfigured || !supabase) return []
+  return fetchPublicList('/api/cms/videos')
+}
 
+let textOverridesPromise = null
+
+export async function getActiveTextOverrides() {
+  if (!textOverridesPromise) textOverridesPromise = fetchPublicList('/api/cms/texts')
+  return textOverridesPromise
+}
+
+// ---------- Admin account ----------
+
+export async function getAdminSession() {
   try {
-    const { data, error } = await supabase
-      .from('site_videos')
-      .select(VIDEO_COLUMNS)
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true })
-
-    if (error) return []
-    return safeArray(data)
+    const response = await fetch('/api/admin/session', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+    if (!response.ok) return null
+    const data = await response.json()
+    return data?.email ? { email: data.email } : null
   } catch {
-    return []
+    return null
   }
 }
 
-export async function getActiveTextOverrides(_locale) {
-  if (!supabaseConfigured || !supabase) return []
+export async function adminLogin(email, password) {
+  return adminRequest('POST', '/api/admin/login', { email, password })
+}
 
+export async function adminLogout() {
   try {
-    const { data, error } = await supabase
-      .from('site_texts')
-      .select(TEXT_COLUMNS)
-      .eq('is_active', true)
-      .order('group_id', { ascending: true })
-      .order('text_key', { ascending: true })
-
-    if (error) return []
-    return safeArray(data)
+    await adminRequest('POST', '/api/admin/logout', {})
   } catch {
-    return []
+    // Signing out locally is enough when the server is unreachable
   }
 }
 
-export async function isCurrentUserAdmin(userId) {
-  if (!userId) return false
-  if (!supabaseConfigured || !supabase) return false
-
+export async function checkSetupToken(token) {
   try {
-    const { data, error } = await supabase
-      .from('admin_users')
-      .select('user_id,email')
-      .eq('user_id', userId)
-      .maybeSingle()
-
-    if (error) return false
-    return Boolean(data?.user_id)
+    const response = await fetch(`/api/admin/setup?token=${encodeURIComponent(token)}`, {
+      headers: { Accept: 'application/json' },
+    })
+    if (!response.ok) return false
+    const data = await response.json()
+    return Boolean(data?.valid)
   } catch {
     return false
   }
 }
 
+export async function adminCompleteSetup(token, email, password) {
+  return adminRequest('POST', '/api/admin/setup', { token, email, password })
+}
+
+// ---------- Admin: media ----------
+
 export async function adminListMedia(section) {
-  const client = ensureClient()
-  let query = client
-    .from('site_media')
-    .select(MEDIA_COLUMNS)
-    .order('section', { ascending: true })
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false })
-
-  if (section) {
-    query = query.eq('section', section)
-  }
-
-  const { data, error } = await query
-  if (error) throw error
-  return safeArray(data)
+  const query = section ? `?section=${encodeURIComponent(section)}` : ''
+  const data = await adminRequest('GET', `/api/admin/media${query}`)
+  return safeArray(data?.items)
 }
 
 export async function adminListMediaBySection(section) {
   return adminListMedia(section)
 }
 
+async function saveMediaOrder(items) {
+  await adminRequest('POST', '/api/admin/media/order', {
+    items: items.map((item) => ({ id: item.id, sort_order: item.sort_order })),
+  })
+}
+
 export async function normalizeMediaOrder(section) {
-  const client = ensureClient()
   const normalized = normalizeOrderLocally(await adminListMedia(section))
-
-  await runUpdates(
-    normalized.map((item) =>
-      client
-        .from('site_media')
-        .update({ sort_order: item.sort_order })
-        .eq('id', item.id),
-    ),
-  )
-
+  await saveMediaOrder(normalized)
   return normalized
 }
 
 export async function moveMediaItem(section, id, direction) {
-  const client = ensureClient()
   const normalized = normalizeOrderLocally(await adminListMedia(section))
   const currentIndex = normalized.findIndex((item) => item.id === id)
   const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
@@ -226,16 +170,7 @@ export async function moveMediaItem(section, id, direction) {
   reordered.splice(targetIndex, 0, moved)
 
   const updates = reordered.map((item, index) => ({ ...item, sort_order: index + 1 }))
-
-  await runUpdates(
-    updates.map((item) =>
-      client
-        .from('site_media')
-        .update({ sort_order: item.sort_order })
-        .eq('id', item.id),
-    ),
-  )
-
+  await saveMediaOrder(updates)
   return updates
 }
 
@@ -244,25 +179,16 @@ export async function adminMoveMediaItem(section, id, direction) {
 }
 
 export async function adminCreateMedia(payload) {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_media')
-    .insert(payload)
-    .select(MEDIA_COLUMNS)
-    .single()
-
-  if (error) throw error
-  return data
+  const data = await adminRequest('POST', '/api/admin/media', payload)
+  return data?.item
 }
 
 export async function adminAddGalleryImage(section, imageData) {
   const normalized = normalizeOrderLocally(await adminListMedia(section))
-  const nextOrder = normalized.length + 1
-
   const saved = await adminCreateMedia({
     ...imageData,
     section,
-    sort_order: nextOrder,
+    sort_order: normalized.length + 1,
     is_active: imageData.is_active ?? true,
   })
 
@@ -271,68 +197,38 @@ export async function adminAddGalleryImage(section, imageData) {
 }
 
 export async function adminUpdateMedia(id, payload) {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_media')
-    .update(payload)
-    .eq('id', id)
-    .select(MEDIA_COLUMNS)
-    .single()
-
-  if (error) throw error
-  return data
+  const data = await adminRequest('PATCH', `/api/admin/media/${encodeURIComponent(id)}`, payload)
+  return data?.item
 }
 
 export async function adminDeleteMedia(id) {
-  const client = ensureClient()
-  const { error } = await client.from('site_media').delete().eq('id', id)
-  if (error) throw error
+  await adminRequest('DELETE', `/api/admin/media/${encodeURIComponent(id)}`)
+}
+
+async function bulkUpdateMedia(ids, patch) {
+  if (ids.length === 0) return
+  await adminRequest('POST', '/api/admin/media/bulk-update', { ids, patch })
+}
+
+function rankSlotRows(rows) {
+  return rows.slice().sort((a, b) => {
+    if (Boolean(a.is_active) !== Boolean(b.is_active)) return Boolean(b.is_active) - Boolean(a.is_active)
+    return byOrderThenCreated(a, b)
+  })
 }
 
 export async function deactivateDuplicateActiveSlotRows(slotId) {
-  const client = ensureClient()
-  const existingRows = await adminListMedia(slotId)
-  const ranked = existingRows
-    .slice()
-    .sort((a, b) => {
-      if (Boolean(a.is_active) !== Boolean(b.is_active)) return Boolean(b.is_active) - Boolean(a.is_active)
-      return byOrderThenCreated(a, b)
-    })
-
-  const [primary, ...duplicates] = ranked
-
+  const [primary, ...duplicates] = rankSlotRows(await adminListMedia(slotId))
   if (!primary) return null
 
-  const { data, error } = await client
-    .from('site_media')
-    .update({ is_active: true, sort_order: 1 })
-    .eq('id', primary.id)
-    .select(MEDIA_COLUMNS)
-    .single()
-
-  if (error) throw error
-
-  if (duplicates.length > 0) {
-    const { error: duplicateError } = await client
-      .from('site_media')
-      .update({ is_active: false, sort_order: 2 })
-      .in('id', duplicates.map((item) => item.id))
-
-    if (duplicateError) throw duplicateError
-  }
-
-  return data
+  const saved = await adminUpdateMedia(primary.id, { is_active: true, sort_order: 1 })
+  await bulkUpdateMedia(duplicates.map((item) => item.id), { is_active: false, sort_order: 2 })
+  return saved
 }
 
 export async function adminUpsertSectionImage(slotId, imageData) {
-  const client = ensureClient()
   const existingRows = await adminListMedia(slotId)
-  const primary = existingRows
-    .slice()
-    .sort((a, b) => {
-      if (Boolean(a.is_active) !== Boolean(b.is_active)) return Boolean(b.is_active) - Boolean(a.is_active)
-      return byOrderThenCreated(a, b)
-    })[0]
+  const primary = rankSlotRows(existingRows)[0]
   const payload = {
     ...imageData,
     section: slotId,
@@ -340,75 +236,36 @@ export async function adminUpsertSectionImage(slotId, imageData) {
     is_active: true,
   }
 
-  let saved
+  const saved = primary ? await adminUpdateMedia(primary.id, payload) : await adminCreateMedia(payload)
 
-  if (primary) {
-    const { data, error } = await client
-      .from('site_media')
-      .update(payload)
-      .eq('id', primary.id)
-      .select(MEDIA_COLUMNS)
-      .single()
-
-    if (error) throw error
-    saved = data
-  } else {
-    const { data, error } = await client
-      .from('site_media')
-      .insert(payload)
-      .select(MEDIA_COLUMNS)
-      .single()
-
-    if (error) throw error
-    saved = data
-  }
-
-  const duplicateIds = existingRows
-    .filter((item) => item.id !== saved.id)
-    .map((item) => item.id)
-
-  if (duplicateIds.length > 0) {
-    const { error } = await client
-      .from('site_media')
-      .update({ is_active: false, sort_order: 2 })
-      .in('id', duplicateIds)
-
-    if (error) throw error
-  }
+  await bulkUpdateMedia(
+    existingRows.filter((item) => item.id !== saved.id).map((item) => item.id),
+    { is_active: false, sort_order: 2 },
+  )
 
   return saved
 }
 
-export async function adminListVideos() {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_videos')
-    .select(VIDEO_COLUMNS)
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false })
+// ---------- Admin: videos ----------
 
-  if (error) throw error
-  return safeArray(data)
+export async function adminListVideos() {
+  const data = await adminRequest('GET', '/api/admin/videos')
+  return safeArray(data?.items)
+}
+
+async function saveVideoOrder(items) {
+  await adminRequest('POST', '/api/admin/videos/order', {
+    items: items.map((item) => ({ id: item.id, sort_order: item.sort_order })),
+  })
 }
 
 export async function normalizeVideosOrder() {
-  const client = ensureClient()
   const normalized = normalizeOrderLocally(await adminListVideos())
-
-  await runUpdates(
-    normalized.map((video) =>
-      client
-        .from('site_videos')
-        .update({ sort_order: video.sort_order })
-        .eq('id', video.id),
-    ),
-  )
-
+  await saveVideoOrder(normalized)
   return normalized
 }
 
 export async function moveVideoItem(id, direction) {
-  const client = ensureClient()
   const normalized = normalizeOrderLocally(await adminListVideos())
   const currentIndex = normalized.findIndex((video) => video.id === id)
   const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
@@ -422,85 +279,39 @@ export async function moveVideoItem(id, direction) {
   reordered.splice(targetIndex, 0, moved)
 
   const updates = reordered.map((video, index) => ({ ...video, sort_order: index + 1 }))
-
-  await runUpdates(
-    updates.map((video) =>
-      client
-        .from('site_videos')
-        .update({ sort_order: video.sort_order })
-        .eq('id', video.id),
-    ),
-  )
-
+  await saveVideoOrder(updates)
   return updates
 }
 
 export async function adminCreateVideo(payload) {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_videos')
-    .insert(payload)
-    .select(VIDEO_COLUMNS)
-    .single()
-
-  if (error) throw error
-  return data
+  const data = await adminRequest('POST', '/api/admin/videos', payload)
+  return data?.item
 }
 
 export async function adminUpdateVideo(id, payload) {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_videos')
-    .update(payload)
-    .eq('id', id)
-    .select(VIDEO_COLUMNS)
-    .single()
-
-  if (error) throw error
-  return data
+  const data = await adminRequest('PATCH', `/api/admin/videos/${encodeURIComponent(id)}`, payload)
+  return data?.item
 }
 
 export async function adminDeleteVideo(id) {
-  const client = ensureClient()
-  const { error } = await client.from('site_videos').delete().eq('id', id)
-  if (error) throw error
+  await adminRequest('DELETE', `/api/admin/videos/${encodeURIComponent(id)}`)
 }
 
-export async function adminListTexts() {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_texts')
-    .select(TEXT_COLUMNS)
-    .order('group_id', { ascending: true })
-    .order('text_key', { ascending: true })
+// ---------- Admin: texts ----------
 
-  if (error) throw error
-  return safeArray(data)
+export async function adminListTexts() {
+  const data = await adminRequest('GET', '/api/admin/texts')
+  return safeArray(data?.items)
 }
 
 export async function adminUpsertText(payload) {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_texts')
-    .upsert(payload, { onConflict: 'text_key' })
-    .select(TEXT_COLUMNS)
-    .single()
-
-  if (error) throw error
-  return data
+  const data = await adminRequest('POST', '/api/admin/texts/upsert', { row: payload })
+  return safeArray(data?.items)[0]
 }
 
 export async function adminUpdateText(key, payload) {
-  const client = ensureClient()
-  const { data, error } = await client
-    .from('site_texts')
-    .update(payload)
-    .eq('text_key', key)
-    .select(TEXT_COLUMNS)
-    .single()
-
-  if (error) throw error
-  return data
+  const data = await adminRequest('PATCH', `/api/admin/texts/${encodeURIComponent(key)}`, payload)
+  return data?.item
 }
 
 export async function adminResetTextOverride(key) {
@@ -513,14 +324,11 @@ export async function adminResetTextOverride(key) {
 }
 
 export async function adminDeleteText(key) {
-  const client = ensureClient()
-  const { error } = await client.from('site_texts').delete().eq('text_key', key)
-  if (error) throw error
+  await adminRequest('DELETE', `/api/admin/texts/${encodeURIComponent(key)}`)
 }
 
 export async function adminBulkUpsertTextDefaults(items) {
-  const client = ensureClient()
-  const payload = safeArray(items).map((item) => ({
+  const rows = safeArray(items).map((item) => ({
     text_key: item.key ?? item.text_key,
     group_id: item.group_id,
     label_lv: item.label_lv,
@@ -532,13 +340,7 @@ export async function adminBulkUpsertTextDefaults(items) {
     is_active: item.is_active ?? true,
   }))
 
-  if (payload.length === 0) return []
-
-  const { data, error } = await client
-    .from('site_texts')
-    .upsert(payload, { onConflict: 'text_key' })
-    .select(TEXT_COLUMNS)
-
-  if (error) throw error
-  return safeArray(data)
+  if (rows.length === 0) return []
+  const data = await adminRequest('POST', '/api/admin/texts/upsert', { rows })
+  return safeArray(data?.items)
 }

@@ -1,6 +1,6 @@
 # Admin Media Map
 
-Šis dokuments kartē publiskās sākumlapas attēlus uz admin paneli. Attēli tiek glabāti `site_media.section` vērtībās.
+Šis dokuments kartē publiskās sākumlapas attēlus uz admin paneli. Attēli tiek glabāti Cloudflare D1 tabulas `site_media.section` vērtībās, faili — R2 glabātuvē (`/media/...`).
 
 ## 1. Lapas galvenās bildes
 
@@ -25,7 +25,7 @@ Admin sadaļa: `Sadaļu bildes` → `Lapas sadaļas`.
 
 Admin sadaļa: `Sadaļu bildes` → `Produktu pārskats`.
 
-Piezīme: vecais `product_overview` slots tiek atbalstīts tikai kā COMPACT pārskata legacy fallback, lai esošs CMS attēls nepazustu pirms seeda atkārtotas palaišanas.
+Piezīme: vecais `product_overview` slots tiek atbalstīts tikai kā COMPACT pārskata legacy fallback, lai esošs CMS attēls nepazustu.
 
 ## 3. Produktu kartīšu bildes
 

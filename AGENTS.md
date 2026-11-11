@@ -54,9 +54,9 @@ Current stack:
 - Vite
 - Plain CSS
 - Cloudflare Pages
-- Cloudflare Pages Functions
-- Supabase
-- Cloudinary
+- Cloudflare Pages Functions (API in `functions/` + `server/`)
+- Cloudflare D1 (CMS content + admin accounts, binding `DB`)
+- Cloudflare R2 (CMS image files, binding `MEDIA`)
 - framer-motion is available and may be used only for restrained animation
 
 Do not:
@@ -108,18 +108,22 @@ Admin CMS:
 - `src/admin/admin.css`
 
 CMS helpers:
-- `src/lib/supabaseClient.js`
 - `src/lib/cmsApi.js`
-- `src/lib/cloudinaryUpload.js`
+- `src/lib/mediaUpload.js`
 - `src/lib/mediaSlots.js`
 - `src/lib/useImageSlot.js`
 
-Cloudflare Functions:
-- `functions/api/cloudinary-signature.js`
+Admin account pages:
+- `src/admin/AdminLogin.jsx`
+- `src/admin/AdminSetup.jsx` (one-time invitation link `/admin/setup#<token>`)
 
-Supabase:
-- `supabase/admin_cms_schema.sql`
-- `supabase/admin_cms_seed_existing_content.sql`
+Cloudflare Functions:
+- `functions/api/[[route]].js` → `server/api.js` (router)
+- `functions/media/[[path]].js` → `server/media.js` (serves R2 images at `/media/...`)
+- `server/auth.js` (admin login, sessions, invitations)
+- `server/cms.js` (content endpoints, uploads)
+- `server/schema.js` (D1 schema)
+- `server/migrate.js` (one-time import from the old Supabase setup; remove once the move is finished)
 
 Docs:
 - `ADMIN_SETUP.md`
@@ -147,9 +151,7 @@ When committing is requested:
 
 Never commit:
 - `.env.local`
-- secrets
-- Cloudinary API secret
-- Supabase service role key
+- secrets, keys or tokens (including admin invitation tokens and the import key)
 - temporary files
 
 Safe commit style:
@@ -166,34 +168,18 @@ git push origin main
 
 ## Environment and secrets
 
-Local frontend env file:
-```bash
-.env.local
-```
+No environment variables or secrets are needed. The Pages Functions use two bindings, set in Cloudflare Pages → Settings → Bindings for both Production and Preview:
 
-Required local frontend variables:
-```bash
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-```
-
-Cloudflare Pages environment variables:
-```bash
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+```text
+DB     D1 database  canadasleigh-cms
+MEDIA  R2 bucket    canadasleigh-media
 ```
 
 Security rules:
-- Never expose `SUPABASE_SERVICE_ROLE_KEY` in frontend code.
-- Never expose `CLOUDINARY_API_SECRET` in frontend code.
-- Cloudinary uploads use signed uploads through `/api/cloudinary-signature`.
-- Do not use `CLOUDINARY_UPLOAD_PRESET` in this project.
-- Do not put secret values into committed files.
-- `.env.local` must stay uncommitted.
+- Never put secret values into committed files.
+- Admin passwords are stored only as PBKDF2 hashes; sessions and invitation tokens only as SHA-256 hashes.
+- Keep the R2 bucket private; images are served through `/media/...`.
+- Every state-changing admin API call must keep the same-origin check and the session check.
 
 ---
 
@@ -248,7 +234,18 @@ Correct wording examples:
 
 ## Logo rules
 
-Main logo file:
+Header logo (top-left, desktop + mobile menu):
+```text
+/canada-sleigh-logo.svg
+```
+
+Model logos (inside the white product image area):
+```text
+/canada-compact-logo.svg   COMPACT
+/canada-classic-logo.svg   CLASSIC and CLASSIC OPEN
+```
+
+Footer, favicon and admin still use:
 ```text
 /logopng2.png
 ```
@@ -474,71 +471,16 @@ Do not show:
 
 ---
 
-## Supabase CMS rules
+## Cloudflare CMS rules
 
-Supabase is used for admin authentication and CMS media data.
-
-Schema file:
-```text
-supabase/admin_cms_schema.sql
-```
-
-Seed file:
-```text
-supabase/admin_cms_seed_existing_content.sql
-```
+Content and admin accounts live in Cloudflare D1 (`DB`), image files in R2 (`MEDIA`).
 
 Rules:
-- Do not change schema unless explicitly needed.
-- Do not break RLS policies.
-- Do not remove admin access checks.
-- Do not expose service role key to frontend.
-- Keep seed idempotent.
-- Seed should be safe to rerun.
+- Schema lives in `server/schema.js`; keep statements idempotent.
+- Do not remove the admin session check or the same-origin check from admin endpoints.
 - Do not create duplicate active rows for fixed slots.
-- If seed changes, update `ADMIN_SETUP.md`.
-- If media map changes, update `ADMIN_MEDIA_MAP.md`.
-
-After media model changes, the seed should be rerun in Supabase SQL Editor:
-```text
-supabase/admin_cms_seed_existing_content.sql
-```
-
----
-
-## Cloudinary rules
-
-Cloudinary is used for uploaded CMS images.
-
-Rules:
-- Use signed uploads only.
-- Signed upload endpoint:
-```text
-/api/cloudinary-signature
-```
-
-Cloudinary env vars:
-```text
-CLOUDINARY_CLOUD_NAME
-CLOUDINARY_API_KEY
-CLOUDINARY_API_SECRET
-```
-
-Do not use:
-```text
-CLOUDINARY_UPLOAD_PRESET
-```
-
-Do not expose:
-```text
-CLOUDINARY_API_SECRET
-```
-
-Upload folder direction:
-```text
-canadasleigh/gallery
-canadasleigh/sections
-```
+- If the media model changes, update `ADMIN_SETUP.md` and `ADMIN_MEDIA_MAP.md`.
+- There is no public sign-up. New admin accounts come only from one-time invitation links (`admin_setup_tokens`).
 
 ---
 
@@ -876,7 +818,7 @@ Do not modify unless explicitly requested:
 - Stripe logic
 - legal pages
 - legal source files under `src/content/legal/lv/`
-- Supabase schema
+- D1 schema (`server/schema.js`)
 - Cloudflare secrets
 - auth/admin access security
 - logo colors
@@ -907,14 +849,14 @@ A task is done only if:
 - no logo filters/recoloring are introduced
 - no product prices are changed unless requested
 - no payment links are changed unless requested
-- no admin/Supabase/legal files are touched unless required by the task
+- no admin/CMS backend/legal files are touched unless required by the task
 - responsive behavior remains usable
 - fallback content still works if CMS data is missing
 
 For CMS/media tasks, also report:
-- whether seed SQL changed
+- whether the D1 schema changed
 - whether schema SQL changed
-- whether Supabase seed must be rerun
+- whether D1 data must be changed
 - new or changed media slot IDs
 
 ---
@@ -938,6 +880,6 @@ Checks:
 - prices unchanged
 - payment links unchanged
 - legal files untouched
-- admin/Supabase touched or untouched
-- seed rerun needed: yes/no
+- admin/CMS backend touched or untouched
+- D1 data change needed: yes/no
 ```

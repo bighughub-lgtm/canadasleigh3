@@ -210,7 +210,7 @@ export default function AdminVideos() {
       {loading && <div className="admin-muted">Ielādē video...</div>}
       {!loading && !error && videos.length === 0 && (
         <div className="admin-empty-state">
-          Video dati vēl nav importēti. Palaidiet Supabase seed failu vai pievienojiet pirmo video.
+          Video dati vēl nav importēti. Ja saturs pazudis, sazinieties ar izstrādātāju vai pievienojiet pirmo video.
         </div>
       )}
 

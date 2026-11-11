@@ -4,7 +4,7 @@ import {
   adminUpdateMedia,
   adminUpsertSectionImage,
 } from '../lib/cmsApi'
-import { uploadImageToCloudinary } from '../lib/cloudinaryUpload'
+import { uploadImage } from '../lib/mediaUpload'
 import { editableImageSlotIds, editableImageSlots, mediaSlotGroups } from '../lib/mediaSlots'
 import './admin.css'
 
@@ -95,7 +95,7 @@ export default function AdminSectionImages() {
 
     try {
       const currentItem = slotItems[slot.id]
-      const upload = await uploadImageToCloudinary(file, { folder: 'sections' })
+      const upload = await uploadImage(file, { folder: 'sections' })
       const saved = await adminUpsertSectionImage(slot.id, {
         title_lv: slot.label_lv,
         alt_lv: currentItem?.alt_lv || slot.alt_lv,
@@ -182,7 +182,7 @@ export default function AdminSectionImages() {
       {loading && <div className="admin-muted">Ielādē sadaļu attēlus...</div>}
       {!loading && !error && Object.values(slotItems).filter(Boolean).length === 0 && (
         <div className="admin-empty-state">
-          Sadaļu attēli vēl nav importēti. Palaidiet Supabase seed failu vai augšupielādējiet attēlu izvēlētajai sadaļai.
+          Sadaļu attēli vēl nav importēti. Ja saturs pazudis, sazinieties ar izstrādātāju vai augšupielādējiet attēlu izvēlētajai sadaļai.
         </div>
       )}
 

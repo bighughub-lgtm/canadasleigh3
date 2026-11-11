@@ -114,7 +114,7 @@ export default function AdminTexts() {
             type: 'error',
             text:
               error?.message ||
-              'Tekstus neizdevās ielādēt. Pārbaudi, vai Supabase shēma ir atjaunināta.',
+              'Tekstus neizdevās ielādēt. Mēģini pārlādēt lapu.',
           })
         }
       } finally {
@@ -180,7 +180,7 @@ export default function AdminTexts() {
         type: 'error',
         text:
           error?.message ||
-          'Tekstu neizdevās saglabāt. Pārbaudi Supabase piekļuves tiesības.',
+          'Tekstu neizdevās saglabāt. Mēģini vēlreiz vai piesakies no jauna.',
       })
     } finally {
       setSavingKey('')
@@ -205,7 +205,7 @@ export default function AdminTexts() {
         type: 'error',
         text:
           error?.message ||
-          'Tekstu neizdevās atjaunot. Pārbaudi Supabase piekļuves tiesības.',
+          'Tekstu neizdevās atjaunot. Mēģini vēlreiz vai piesakies no jauna.',
       })
     } finally {
       setSavingKey('')

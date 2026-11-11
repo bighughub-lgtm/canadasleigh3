@@ -12,6 +12,7 @@ import PiegadeAtgriešana from './pages/PiegadeAtgriešana'
 
 const AdminLogin = lazy(() => import('./admin/AdminLogin'))
 const AdminDashboard = lazy(() => import('./admin/AdminDashboard'))
+const AdminSetup = lazy(() => import('./admin/AdminSetup'))
 
 function RouteScrollTop() {
   const { pathname, hash } = useLocation()
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/pirksanas-noteikumi" element={<PirksanasNoteikumi />} />
             <Route path="/piegade-atgriešana" element={<PiegadeAtgriešana />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/setup" element={<AdminSetup />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Suspense>

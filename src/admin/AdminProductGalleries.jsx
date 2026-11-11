@@ -6,7 +6,7 @@ import {
   moveMediaItem,
   normalizeMediaOrder,
 } from '../lib/cmsApi'
-import { uploadImageToCloudinary } from '../lib/cloudinaryUpload'
+import { uploadImage } from '../lib/mediaUpload'
 import { productGallerySections } from '../lib/mediaSlots'
 import './admin.css'
 
@@ -87,7 +87,7 @@ export default function AdminProductGalleries() {
     setError('')
 
     try {
-      const upload = await uploadImageToCloudinary(file, { folder: 'product-galleries' })
+      const upload = await uploadImage(file, { folder: 'product-galleries' })
       await adminAddGalleryImage(section, {
         title_lv: fileTitle(file),
         alt_lv: fileTitle(file),
@@ -116,7 +116,7 @@ export default function AdminProductGalleries() {
     setError('')
 
     try {
-      const upload = await uploadImageToCloudinary(file, { folder: 'product-galleries' })
+      const upload = await uploadImage(file, { folder: 'product-galleries' })
       const updated = await adminUpdateMedia(item.id, {
         ...cleanMediaPayload(item),
         title_lv: item.title_lv || fileTitle(file),
@@ -274,7 +274,7 @@ export default function AdminProductGalleries() {
       {loading && <div className="admin-muted">Ielādē produktu galerijas...</div>}
       {!loading && !error && activeItems.length === 0 && (
         <div className="admin-empty-state">
-          Šī produkta galerija vēl nav importēta. Palaidiet Supabase seed failu vai pievienojiet pirmo attēlu.
+          Šī produkta galerija vēl nav importēta. Ja saturs pazudis, sazinieties ar izstrādātāju vai pievienojiet pirmo attēlu.
         </div>
       )}
 

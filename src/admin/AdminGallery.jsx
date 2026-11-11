@@ -6,7 +6,7 @@ import {
   moveMediaItem,
   normalizeMediaOrder,
 } from '../lib/cmsApi'
-import { uploadImageToCloudinary } from '../lib/cloudinaryUpload'
+import { uploadImage } from '../lib/mediaUpload'
 import './admin.css'
 
 const languages = [
@@ -69,7 +69,7 @@ export default function AdminGallery() {
     setError('')
 
     try {
-      const upload = await uploadImageToCloudinary(file, { folder: 'gallery' })
+      const upload = await uploadImage(file, { folder: 'gallery' })
       await adminCreateMedia({
         section: 'gallery',
         title_lv: fileTitle(file),
@@ -116,7 +116,7 @@ export default function AdminGallery() {
     setError('')
 
     try {
-      const upload = await uploadImageToCloudinary(selectedFile, { folder: 'gallery' })
+      const upload = await uploadImage(selectedFile, { folder: 'gallery' })
       const updated = await adminUpdateMedia(item.id, {
         ...cleanMediaPayload(item),
         title_lv: item.title_lv || fileTitle(selectedFile),
@@ -214,7 +214,7 @@ export default function AdminGallery() {
       {loading && <div className="admin-muted">Ielādē attēlus...</div>}
       {!loading && !error && items.length === 0 && (
         <div className="admin-empty-state">
-          Galerijas dati vēl nav importēti. Palaidiet Supabase seed failu vai augšupielādējiet pirmo attēlu.
+          Galerijas dati vēl nav importēti. Ja saturs pazudis, sazinieties ar izstrādātāju vai augšupielādējiet pirmo attēlu.
         </div>
       )}
 

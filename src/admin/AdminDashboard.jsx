@@ -6,8 +6,7 @@ import AdminProductGalleries from './AdminProductGalleries'
 import AdminVideos from './AdminVideos'
 import AdminSectionImages from './AdminSectionImages'
 import AdminTexts from './AdminTexts'
-import { isCurrentUserAdmin } from '../lib/cmsApi'
-import { supabase, supabaseConfigured, getSupabaseConfigError } from '../lib/supabaseClient'
+import { adminLogout, getAdminSession } from '../lib/cmsApi'
 import './admin.css'
 
 export default function AdminDashboard() {
@@ -18,53 +17,24 @@ export default function AdminDashboard() {
   useEffect(() => {
     let active = true
 
-    async function validateSession(session) {
-      const sessionUser = session?.user
-
+    getAdminSession().then((sessionUser) => {
       if (!active) return
-
-      if (!sessionUser) {
-        setUser(null)
-        setStatus('login')
-        return
-      }
-
-      setStatus('loading')
       setUser(sessionUser)
-      const allowed = await isCurrentUserAdmin(sessionUser.id)
-
-      if (!active) return
-      setStatus(allowed ? 'ready' : 'denied')
-    }
-
-    if (!supabaseConfigured || !supabase) {
-      setStatus('not-configured')
-      return () => {
-        active = false
-      }
-    }
-
-    supabase.auth.getSession().then(({ data }) => {
-      validateSession(data.session)
-    })
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      validateSession(session)
+      setStatus(sessionUser ? 'ready' : 'login')
     })
 
     return () => {
       active = false
-      authListener.subscription.unsubscribe()
     }
   }, [])
 
-  const handleAuthenticated = async (sessionUser) => {
-    setStatus('ready')
+  const handleAuthenticated = (sessionUser) => {
     setUser(sessionUser)
+    setStatus('ready')
   }
 
   const handleSignOut = async () => {
-    await supabase?.auth.signOut()
+    await adminLogout()
     window.location.href = '/admin/login'
   }
 
@@ -76,32 +46,7 @@ export default function AdminDashboard() {
     )
   }
 
-  if (status === 'not-configured') {
-    return (
-      <main className="admin-state-page">
-        <div className="admin-state-card admin-state-card--wide">
-          <h1>Admin panelis nav nokonfigurēts</h1>
-          <p>{getSupabaseConfigError()}</p>
-        </div>
-      </main>
-    )
-  }
-
   if (status === 'login') return <AdminLogin onAuthenticated={handleAuthenticated} />
-
-  if (status === 'denied') {
-    return (
-      <main className="admin-state-page">
-        <div className="admin-state-card admin-state-card--wide">
-          <h1>Piekļuve liegta</h1>
-          <p>Nav piekļuves šim admin panelim.</p>
-          <button type="button" className="admin-secondary-btn" onClick={handleSignOut}>
-            Iziet
-          </button>
-        </div>
-      </main>
-    )
-  }
 
   return (
     <AdminLayout
