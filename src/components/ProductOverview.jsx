@@ -4,11 +4,11 @@ import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
 import { useLocale } from '../lib/publicI18n.jsx'
 
-// Model logos for the dark overview panel (white text variant)
+// Model logos shown inside the white product image frame
 const OVERVIEW_MODEL_LOGOS = {
-  compact: '/canada-compact-logo-dark.svg',
-  classic: '/canada-classic-logo-dark.svg',
-  'classic-open': '/canada-classic-logo-dark.svg',
+  compact: '/canada-compact-logo.svg',
+  classic: '/canada-classic-logo.svg',
+  'classic-open': '/canada-classic-logo.svg',
 }
 
 export default function ProductOverview() {
@@ -68,15 +68,6 @@ export default function ProductOverview() {
                   <span className="overview-model-kicker">{overview.modelKicker}</span>
                   <div className="overview-model-name">{activeModel.name}</div>
                   <p>{activeModel.spec}</p>
-                  {OVERVIEW_MODEL_LOGOS[activeModel.id] ? (
-                    <img
-                      className="overview-model-logo"
-                      src={OVERVIEW_MODEL_LOGOS[activeModel.id]}
-                      alt=""
-                      aria-hidden="true"
-                      decoding="async"
-                    />
-                  ) : null}
                 </div>
 
                 <div className="overview-logo-badge">
@@ -98,7 +89,6 @@ export default function ProductOverview() {
                     role="tab"
                     aria-selected={activeModelId === model.id}
                     className={`overview-switcher-btn${activeModelId === model.id ? ' overview-switcher-btn--active' : ''}`}
-                    onPointerDown={() => handleModelSelect(model.id)}
                     onClick={() => handleModelSelect(model.id)}
                   >
                     {model.tabLabel}
@@ -106,14 +96,38 @@ export default function ProductOverview() {
                 ))}
               </div>
 
-              <div className={`overview-stage overview-stage--${activeModel.id}`}>
-                <img
-                  src={activeModel.image}
-                  alt={activeModel.alt}
-                  className={`overview-main-img overview-main-img--${activeModel.id}`}
-                  loading="lazy"
-                  decoding="async"
-                />
+              <div className="overview-stage">
+                <div className="overview-frame">
+                  {modelsWithImages.map((model) => {
+                    const isActive = model.id === activeModel.id
+
+                    return (
+                      <div
+                        key={model.id}
+                        className={`overview-layer${isActive ? ' overview-layer--active' : ''}`}
+                        aria-hidden={!isActive}
+                      >
+                        <img
+                          src={model.image}
+                          alt={model.alt}
+                          className="overview-main-img"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        {OVERVIEW_MODEL_LOGOS[model.id] ? (
+                          <img
+                            className="overview-model-logo"
+                            src={OVERVIEW_MODEL_LOGOS[model.id]}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : null}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </motion.div>
