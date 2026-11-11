@@ -122,7 +122,7 @@ export default function Contact() {
             />
             <div className="contact-visual-overlay">
               <img
-                src="/apviduskamanaswhite.png"
+                src="/apvidus-ragavas-white.png"
                 alt="Canada Pulkan"
                 className="contact-logo"
                 loading="lazy"

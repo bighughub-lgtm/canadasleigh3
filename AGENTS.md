@@ -356,11 +356,11 @@ Important public assets:
 /heroooAT.mp4
 /small vid.mp4
 /logopng2.png
-/apvidus kamanas.png
-/apviduskamanaswhite.png
+/apvidus-ragavas.png
+/apvidus-ragavas-white.png
 /canadaplukan.jpg
-/mazasragavas.jpg
-/ragavasbig.png
+/mazasragavas-v2.jpg
+/ragavasbig-v2.png
 /PARTNERISSS.jpg
 /statiska bilde.jpg
 /DSC06417.jpg
@@ -406,7 +406,7 @@ Classic Open product detail media:
 Brand assets that should normally stay fixed:
 ```text
 /logopng2.png
-/apviduskamanaswhite.png
+/apvidus-ragavas-white.png
 ```
 
 Do not make brand logo files editable in CMS unless explicitly requested.

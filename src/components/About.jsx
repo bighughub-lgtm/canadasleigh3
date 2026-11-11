@@ -29,7 +29,7 @@ export default function About() {
             </div>
             <div className="about-badge">
               <img
-                src="/apviduskamanaswhite.png"
+                src="/apvidus-ragavas-white.png"
                 alt="Canada Pulkan"
                 loading="lazy"
                 decoding="async"

@@ -18,7 +18,7 @@ export default function ProductOverview() {
   const features = overview.features
   const overviewCompactImage = useImageSlot(
     'product_overview_compact',
-    '/mazasragavas.jpg',
+    '/mazasragavas-v2.jpg',
     overview.imageAlts.compact,
     { legacySlotId: 'product_overview' },
   )
@@ -30,7 +30,7 @@ export default function ProductOverview() {
   )
   const overviewClassicOpenImage = useImageSlot(
     'product_overview_classic_open',
-    '/ragavasbig.png',
+    '/ragavasbig-v2.png',
     overview.imageAlts.classicOpen,
     { legacySlotId: 'product_classic_open' },
   )
@@ -72,7 +72,7 @@ export default function ProductOverview() {
 
                 <div className="overview-logo-badge">
                   <img
-                    src="/apviduskamanaswhite.png"
+                    src="/apvidus-ragavas-white.png"
                     alt="Canada Pulkan"
                     loading="lazy"
                     decoding="async"

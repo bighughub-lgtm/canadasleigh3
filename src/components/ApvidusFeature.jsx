@@ -3,11 +3,11 @@ import { motion } from 'framer-motion'
 import { useImageSlot } from '../lib/useImageSlot'
 import { useLocale } from '../lib/publicI18n.jsx'
 
-/* Light-background section — dark PNG /apvidus kamanas.png looks correct here */
+/* Light-background section — dark PNG /apvidus-ragavas.png looks correct here */
 export default function ApvidusFeature() {
   const { text } = useLocale()
   const featureText = text.apvidusFeature
-  const featureImage = useImageSlot('apvidus_feature', '/apvidus kamanas.png', featureText.imageAlt)
+  const featureImage = useImageSlot('apvidus_feature', '/apvidus-ragavas.png', featureText.imageAlt)
 
   return (
     <section className="apvidus-feature">

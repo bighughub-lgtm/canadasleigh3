@@ -8,7 +8,7 @@
 | --- | --- | --- | --- | --- |
 | Sākuma skats | `hero` | `Hero.jsx` | `/statiska bilde.jpg` | viens fiksēts attēls |
 | Priekšrocības | `benefits` | `Benefits.jsx` | `/KRJ01720.jpg` | viens fiksēts attēls |
-| Apvidus sadaļa | `apvidus_feature` | `ApvidusFeature.jsx` | `/apvidus kamanas.png` | viens fiksēts attēls |
+| Apvidus sadaļa | `apvidus_feature` | `ApvidusFeature.jsx` | `/apvidus-ragavas.png` | viens fiksēts attēls |
 | Par mums | `about` | `About.jsx` | `/KRJ02427.jpg` | viens fiksēts attēls |
 | Kontakti | `contact` | `Contact.jsx` | `/KRJ02364.jpg` | viens fiksēts attēls |
 | Partneriem | `partners` | `Partners.jsx` | `/PARTNERISSS.jpg` | viens fiksēts attēls |
@@ -19,9 +19,9 @@ Admin sadaļa: `Sadaļu bildes` → `Lapas sadaļas`.
 
 | Admin nosaukums | Slot ID | Komponents | Fallback URL | Tips |
 | --- | --- | --- | --- | --- |
-| Produkta pārskats — COMPACT | `product_overview_compact` | `ProductOverview.jsx` | `/mazasragavas.jpg` | viens fiksēts attēls |
+| Produkta pārskats — COMPACT | `product_overview_compact` | `ProductOverview.jsx` | `/mazasragavas-v2.jpg` | viens fiksēts attēls |
 | Produkta pārskats — CLASSIC | `product_overview_classic` | `ProductOverview.jsx` | `/canadaplukan.jpg` | viens fiksēts attēls |
-| Produkta pārskats — CLASSIC OPEN | `product_overview_classic_open` | `ProductOverview.jsx` | `/ragavasbig.png` | viens fiksēts attēls |
+| Produkta pārskats — CLASSIC OPEN | `product_overview_classic_open` | `ProductOverview.jsx` | `/ragavasbig-v2.png` | viens fiksēts attēls |
 
 Admin sadaļa: `Sadaļu bildes` → `Produktu pārskats`.
 
@@ -31,9 +31,9 @@ Piezīme: vecais `product_overview` slots tiek atbalstīts tikai kā COMPACT pā
 
 | Admin nosaukums | Slot ID | Komponents | Fallback URL | Tips |
 | --- | --- | --- | --- | --- |
-| COMPACT produkts | `product_compact` | `ProductCatalog.jsx` | `/mazasragavas.jpg` | viens fiksēts attēls |
+| COMPACT produkts | `product_compact` | `ProductCatalog.jsx` | `/mazasragavas-v2.jpg` | viens fiksēts attēls |
 | CLASSIC produkts | `product_classic` | `ProductCatalog.jsx` | `/canadaplukan.jpg` | viens fiksēts attēls |
-| CLASSIC OPEN produkts | `product_classic_open` | `ProductCatalog.jsx` | `/ragavasbig.png` | viens fiksēts attēls |
+| CLASSIC OPEN produkts | `product_classic_open` | `ProductCatalog.jsx` | `/ragavasbig-v2.png` | viens fiksēts attēls |
 
 Admin sadaļa: `Sadaļu bildes` → `Produktu kartītes`.
 
@@ -72,6 +72,6 @@ Admin sadaļa: `Videoklipi`.
 | Fails | Kur redzams | Iemesls |
 | --- | --- | --- |
 | `/logopng2.png` | Header, Footer, favicon | galvenais logo |
-| `/apviduskamanaswhite.png` | ProductOverview, About, Contact | zīmola/produkta marķējums |
+| `/apvidus-ragavas-white.png` | ProductOverview, About, Contact | zīmola/produkta marķējums |
 
 Video faili `/heroooAT.mp4`, `/Vannas LAT.mp4`, `/small vid.mp4` ir video saturs, nevis attēlu sloti. Publiskie video saraksta ieraksti ir pārvaldāmi sadaļā `Videoklipi`.
