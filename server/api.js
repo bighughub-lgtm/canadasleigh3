@@ -27,7 +27,6 @@ import {
   publicTexts,
   publicVideos,
 } from './cms.js'
-import { handleImport } from './migrate.js'
 import { HttpError, json } from './http.js'
 
 function match(path, pattern) {
@@ -94,9 +93,6 @@ async function dispatch(request, env) {
   if (path === '/api/admin/logout' && method === 'POST') return handleLogout(request, env)
   if (path === '/api/admin/setup' && method === 'GET') return handleSetupCheck(request, env)
   if (path === '/api/admin/setup' && method === 'POST') return handleSetup(request, env)
-
-  // One-time content move
-  if (path === '/api/migrate/import' && method === 'POST') return handleImport(request, env)
 
   if (path.startsWith('/api/admin/')) return routeAdmin(request, env, path, method)
 

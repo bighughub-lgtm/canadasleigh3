@@ -123,7 +123,6 @@ Cloudflare Functions:
 - `server/auth.js` (admin login, sessions, invitations)
 - `server/cms.js` (content endpoints, uploads)
 - `server/schema.js` (D1 schema)
-- `server/migrate.js` (one-time import from the old Supabase setup; remove once the move is finished)
 
 Docs:
 - `ADMIN_SETUP.md`

@@ -100,4 +100,4 @@ npx wrangler pages dev dist --d1 DB=local-cms --r2 MEDIA=local-media
 
 ## Move from Supabase (November 2026)
 
-Content was copied once from the old Supabase project with `server/migrate.js` (`POST /api/migrate/import`, protected by a one-time key). Images that were on Cloudinary were copied to R2 under `migrated/`. English alt texts and video texts were changed from "sled" to "sleigh" during the move. Rows that were hidden in the old admin were not visible to the public read API and were not copied.
+Content was copied once from the old Supabase project with a one-time, key-protected import endpoint (removed after the move; see git history of `server/migrate.js`). Images that were on Cloudinary were copied to R2 under `migrated/`. English alt texts and video texts were changed from "sled" to "sleigh" during the move. Rows that were hidden in the old admin were not visible to the public read API and were not copied.
