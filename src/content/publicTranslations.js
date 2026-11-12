@@ -138,7 +138,7 @@ export const translations = {
         },
         {
           id: 'classic',
-          tabLabel: 'SLODZEI',
+          tabLabel: 'AR BORTU',
           name: 'CANADA CLASSIC',
           spec: '2.33 x 0.85 m · 14 kg',
           image: '/canadaplukan.jpg',
@@ -146,7 +146,7 @@ export const translations = {
         },
         {
           id: 'classic-open',
-          tabLabel: 'ATVĒRTAIS',
+          tabLabel: 'BEZ BORTA',
           name: 'CANADA CLASSIC OPEN',
           spec: '2.33 x 0.85 m · 14 kg',
           image: '/ragavasbig-v2.png',
@@ -731,8 +731,8 @@ export const translations = {
       modelSelectorLabel: 'Model selection',
       models: [
         { id: 'compact', tabLabel: 'COMPACT', name: 'CANADA COMPACT', spec: '1.4 x 0.65 m · 5 kg', image: '/mazasragavas-v2.jpg', alt: 'CANADA COMPACT sleigh' },
-        { id: 'classic', tabLabel: 'LOAD', name: 'CANADA CLASSIC', spec: '2.33 x 0.85 m · 14 kg', image: '/canadaplukan.jpg', alt: 'CANADA CLASSIC sleigh' },
-        { id: 'classic-open', tabLabel: 'OPEN', name: 'CANADA CLASSIC OPEN', spec: '2.33 x 0.85 m · 14 kg', image: '/ragavasbig-v2.png', alt: 'CANADA CLASSIC OPEN sleigh' },
+        { id: 'classic', tabLabel: 'WITH REAR BAR', name: 'CANADA CLASSIC', spec: '2.33 x 0.85 m · 14 kg', image: '/canadaplukan.jpg', alt: 'CANADA CLASSIC sleigh' },
+        { id: 'classic-open', tabLabel: 'NO REAR BAR', name: 'CANADA CLASSIC OPEN', spec: '2.33 x 0.85 m · 14 kg', image: '/ragavasbig-v2.png', alt: 'CANADA CLASSIC OPEN sleigh' },
       ],
       imageAlts: {
         compact: 'CANADA COMPACT sleigh in the product overview',
@@ -849,7 +849,7 @@ export const translations = {
           imageAlt: 'CANADA CLASSIC sleigh',
           price: productPrices.classic,
           availability: 'In stock',
-          tag: 'With rear wall',
+          tag: 'With rear bar',
           tagFeatured: false,
           summary: 'A full-size model with a rear end wall for large game and heavy equipment when maximum capacity, flexibility and stable off-road pulling are needed.',
           features: ['Made in Sweden', '8 mm HD polyethylene', 'Good glide', 'Up to 2 large moose at once', 'Suitable for large game and equipment'],
@@ -894,7 +894,7 @@ export const translations = {
           imageAlt: 'CANADA CLASSIC OPEN sleigh',
           price: productPrices.classicOpen,
           availability: 'In stock',
-          tag: 'No rear wall',
+          tag: 'No rear bar',
           tagFeatured: false,
           summary: 'A full-size model without a rear end wall for large game and bulky loads, with the same off-road durability, flexibility and pulling quality.',
           features: ['Made in Sweden', 'No rear end wall', '8 mm HD polyethylene', 'Good glide', 'Suitable for large game and equipment'],
@@ -1291,8 +1291,8 @@ export const translations = {
       modelSelectorLabel: 'Выбор модели',
       models: [
         { id: 'compact', tabLabel: 'COMPACT', name: 'CANADA COMPACT', spec: '1.4 x 0.65 m · 5 kg', image: '/mazasragavas-v2.jpg', alt: 'Сани CANADA COMPACT' },
-        { id: 'classic', tabLabel: 'НАГРУЗКА', name: 'CANADA CLASSIC', spec: '2.33 x 0.85 m · 14 kg', image: '/canadaplukan.jpg', alt: 'Сани CANADA CLASSIC' },
-        { id: 'classic-open', tabLabel: 'OPEN', name: 'CANADA CLASSIC OPEN', spec: '2.33 x 0.85 m · 14 kg', image: '/ragavasbig-v2.png', alt: 'Сани CANADA CLASSIC OPEN' },
+        { id: 'classic', tabLabel: 'С ЗАДНИМ БОРТОМ', name: 'CANADA CLASSIC', spec: '2.33 x 0.85 m · 14 kg', image: '/canadaplukan.jpg', alt: 'Сани CANADA CLASSIC' },
+        { id: 'classic-open', tabLabel: 'БЕЗ ЗАДНЕГО БОРТА', name: 'CANADA CLASSIC OPEN', spec: '2.33 x 0.85 m · 14 kg', image: '/ragavasbig-v2.png', alt: 'Сани CANADA CLASSIC OPEN' },
       ],
       imageAlts: {
         compact: 'Сани CANADA COMPACT в обзоре продукта',
