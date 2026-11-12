@@ -122,6 +122,7 @@ const FIELD_LABELS = {
   fullInfo: 'Pilnas informācijas poga',
   fullscreen: 'Pilnekrāna teksts',
   heading: 'Virsraksts',
+  highlight: 'Izceltais teksts',
   imageAlt: 'Attēla alternatīvais teksts',
   intro: 'Ievadteksts',
   label: 'Etiķete',

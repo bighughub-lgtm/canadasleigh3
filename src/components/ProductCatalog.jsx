@@ -736,6 +736,8 @@ export default function ProductCatalog() {
 
                     <p className="catalog-summary">{product.summary}</p>
 
+                    {product.highlight ? <p className="catalog-highlight">{product.highlight}</p> : null}
+
                     <ul className="catalog-features">
                       {product.features.map((feature) => (
                         <li key={feature}>

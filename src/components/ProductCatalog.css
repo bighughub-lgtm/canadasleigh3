@@ -192,6 +192,18 @@
   margin-bottom: 14px;
 }
 
+.catalog-highlight {
+  margin: -4px 0 14px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  background: rgba(201, 146, 63, 0.1);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
 .catalog-features {
   list-style: none;
   display: flex;
